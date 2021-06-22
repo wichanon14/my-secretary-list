@@ -28,14 +28,14 @@ const TaskCard = (props) =>
 
 const style = StyleSheet.create({
     CardArea:{
-        borderWidth:1,
         minHeight:60,
         width:'80%',
         borderRadius:15,
         marginLeft:'10%',
         marginTop:'5%',
         justifyContent:'center',
-        padding:'5%'
+        padding:'5%',
+        backgroundColor:'#FFFF'
     },
     Message:{
         fontSize:15,

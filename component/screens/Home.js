@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import Header from '../elements/Header'
 import ListDisplay from '../elements/ListDisplay';
 import WeeklyDisplay from '../elements/WeeklyDisplay';
+import MenuBar from '../elements/MenuBar'
 
 function Home(){
 
@@ -11,6 +12,7 @@ function Home(){
             <Header/>
             <WeeklyDisplay/>
             <ListDisplay/>
+            <MenuBar />
         </View>
     )
 }
