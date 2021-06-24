@@ -8,6 +8,14 @@ export const setDateSelected = (data) =>
     }
 }
 
+/* =============================== Task List Operation =================================== */
+export const createTask = (data) =>
+{
+    return {
+        type : "CREATE_TASK",
+        payload : data
+    }
+}
 
 /*
 Example 

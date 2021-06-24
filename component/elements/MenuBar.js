@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { useSelector } from 'react-redux';
 import Space from './Space'
+import TaskCreatedModal from './TaskCreatedModal'
 
 const MenuBar = ()=>
 {
 
     const [ selected, setSelected ] = useState('clipboard-list')
+    const [ showTaskCreatedModal, setShowTaskCreatedModal ] = useState(false);
+    const dateSelected = useSelector(state=>state.DateOpt);
 
     const backgroundColor = (name) =>{
 
@@ -21,19 +25,25 @@ const MenuBar = ()=>
             <Space size={0.3} />
             <Icon name={'clipboard-list'} size={40} color="white" onPress={()=>setSelected('clipboard-list')}
                 style={[style.MenuArea,{backgroundColor:backgroundColor('clipboard-list')}]} />
+            
             <Space size={0.3} />
             <Icon name={'bullseye'} size={40} color="white" onPress={()=>setSelected('bullseye')}
                 style={[style.MenuArea,{backgroundColor:backgroundColor('bullseye')}]} />
+            
             <Space size={0.3} />
-            <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea}/>
-            <Space size={0.3} />
+            <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea} onPress={()=>setShowTaskCreatedModal(true)}/>
+            
+            <Space size={0.5} />
             <Icon name={'calendar-alt'} size={40} color="white" onPress={()=>setSelected('calendar-alt')}
                 style={[style.MenuArea,{backgroundColor:backgroundColor('calendar-alt')}]} />
+            
             <Space size={0.3} />
             <Icon name={'sliders-h'} size={40} color="white" onPress={()=>setSelected('sliders-h')}
                 style={[style.MenuArea,{backgroundColor:backgroundColor('sliders-h')}]} />
+            
             <Space size={0.3} />
-
+            { // Destroy when modal hide
+            (showTaskCreatedModal)?(<TaskCreatedModal date={dateSelected.DateSelected} setShow={setShowTaskCreatedModal} show={showTaskCreatedModal}/>):(<View></View>)}
         </View>
     )
 }
