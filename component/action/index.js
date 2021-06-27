@@ -1,3 +1,12 @@
+/* =============================== Database Action =================================== */
+export const setDatabase = (data) =>
+{
+    return {
+        type : "SET_DATABASE_CONNECTION",
+        payload : data
+    }
+}
+
 
 /* =============================== Date Operation =================================== */
 export const setDateSelected = (data) =>
@@ -13,6 +22,14 @@ export const createTask = (data) =>
 {
     return {
         type : "CREATE_TASK",
+        payload : data
+    }
+}
+
+export const setTasks = (data) =>
+{
+    return {
+        type : "SET_TASK_LIST",
         payload : data
     }
 }

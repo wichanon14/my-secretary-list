@@ -13,8 +13,8 @@ const ListDisplay = ()=>{
         <View style={style.ListArea}>
             <ScrollView style={{flex:1}}>
                 {
-                    tasklists.lists.filter((val)=>toyyyyMMDD(val.date)===toyyyyMMDD(dateOpt.DateSelected)).map((val,i)=>
-                        <TaskCard message={val.task_name} key={"task_"+i}/>    
+                    tasklists.lists.filter((val)=>val.date===toyyyyMMDD(dateOpt.DateSelected)).map((val,i)=>
+                        <TaskCard data={val} key={"task_"+i}/>    
                     )
                 }
                 <View style={{minHeight:30}}></View>
