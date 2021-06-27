@@ -24,27 +24,23 @@ const WeeklyDisplay = ()=>{
     const generateDayOfWeek = () =>{
         
         let newDayOfWeek = [];
-        let dateSelected = currentDate;
+        let dateSelected = Date.parse(currentDate);
 
         // get 3 days before current day
         for(i=3;i>0;i--)
         {
-            dateSelected = currentDate;
-            let day = new Date()
-            day.setDate(dateSelected.getDate()-i)
+            let day = new Date( dateSelected-(i*86400000) )
             newDayOfWeek.push(day);
             //console.log(day,day.getMonth())
         }
         
         // selected date or current date
-        newDayOfWeek.push(dateSelected);
+        newDayOfWeek.push(currentDate);
 
         // get 3 days after current day
         for(i=1;i<4;i++)
         {
-            dateSelected = currentDate;
-            let day = new Date()
-            day.setDate(dateSelected.getDate()+i)
+            let day = new Date( dateSelected+(i*86400000) )
             newDayOfWeek.push(day);
             //console.log(day,day.getMonth())
         }
