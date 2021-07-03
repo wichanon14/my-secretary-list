@@ -1,3 +1,22 @@
+/* =============================== Ledger Action =================================== */
+export const setLedgerComponent = (data) =>
+{
+    return {
+        type: "SET_LEDGER_COMPONENT",
+        payload: data
+    }
+}
+
+export const setTmpLedger = (data) =>
+{
+    return {
+        type: "SET_TEMP_LEDGER",
+        payload:data
+    }
+}
+
+
+
 /* =============================== Database Action =================================== */
 export const setDatabase = (data) =>
 {

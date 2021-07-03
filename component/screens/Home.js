@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native';
-import Header from '../elements/Header'
+import HomeHeader from '../elements/HomeHeader'
 import ListDisplay from '../elements/ListDisplay';
 import WeeklyDisplay from '../elements/WeeklyDisplay';
 import MenuBar from '../elements/MenuBar'
@@ -9,9 +9,9 @@ function Home(){
 
     return (
         <View style={style.HomeArea}>
-            <Header/>
+            <HomeHeader/>
             <WeeklyDisplay/>
-            <ListDisplay/>
+            <ListDisplay height={'57%'}/>
             <MenuBar />
         </View>
     )

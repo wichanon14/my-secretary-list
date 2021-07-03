@@ -7,7 +7,9 @@ import { startDatabase, GetAllDailyTaskByDate } from './component/database';
 import { MenuProvider } from 'react-native-popup-menu';
 import rootReducers from './component/reducer';
 import Home from './component/screens/Home';
+import Template from './component/screens/Template';
 import { toyyyyMMDD } from './component/central';
+import Ledger from './component/screens/Ledger';
 const store = createStore(rootReducers);
 const Stack = createStackNavigator();
 
@@ -31,8 +33,10 @@ export default function App() {
     <MenuProvider customStyles={menuProviderStyles}>
       <Provider store={store} >
         <NavigationContainer>
-          <Stack.Navigator headerMode={'none'}>
-            <Stack.Screen name="Home" component={Home} db={db}/>
+          <Stack.Navigator headerMode={'none'} initialRouteName={'Ledger'}>
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Template" component={Template} />
+            <Stack.Screen name="Ledger" component={Ledger} />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>
