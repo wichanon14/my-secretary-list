@@ -12,13 +12,16 @@ const TopicLedger = (props)=>
                     {props.component.title}
                 </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{marginTop:'1.5%',marginLeft:'2%'}} 
-                onPress={()=>{
-                    let data = props.AddNewForm(props.component);
-                    props.setComponent(data);
-                }}>
-                <Icon name={'plus-square'} regular size={20} color="black" ></Icon>
-            </TouchableOpacity>
+            {
+                (!props.isLock) && 
+                <TouchableOpacity style={{marginTop:'1.5%',marginLeft:'2%'}} 
+                    onPress={()=>{
+                        let data = props.AddNewForm(props.component);
+                        props.setComponent(data);
+                    }}>
+                    <Icon name={'plus-square'} regular size={20} color="black" ></Icon>
+                </TouchableOpacity>
+            }
             
         </View>
     )

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ToastAndroid } from 'react-native'
+import { View, StyleSheet, Text, ToastAndroid, TouchableOpacity, ScrollView } from 'react-native'
 import HomeHeader from '../elements/HomeHeader';
 import EmptyComponent from '../elements/EmptyComponent';
 import CreateSingleTextModal from '../elements/CreateSingleTextModal';
@@ -7,6 +7,12 @@ import TopicLedger from '../elements/TopicLedger';
 import DummyLedgerList from '../elements/DummyLedgerList';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLedgerComponent, setTmpLedger } from '../action';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import LedgerRowType1 from '../elements/LedgerRowType1';
+import LedgerRowType2 from '../elements/LedgerRowType2';
+import LedgerRowType3 from '../elements/LedgerRowType3';
+import LedgerRowType4 from '../elements/LedgerRowType4';
+import { sumValueFromChild } from '../central';
 
 const Ledger = (props) =>
 {
@@ -22,9 +28,23 @@ const Ledger = (props) =>
     const [ typeModal, setTypeModal ] = useState(false);
 
     useEffect(()=>{
-        console.log(component);
         setComponent(ledgerState.component);
+        Recalculate(component)
     },[ledgerState.component])
+
+    const Recalculate = (parent)=>
+    {
+        if( parent && parent.child && parent.child.length > 0)
+        {
+            parent.child.forEach((val)=>{
+                Recalculate(val);
+            })
+            if(parent.type === 3)
+            {
+                sumValueFromChild(parent)
+            }
+        }
+    }
 
     const createFirstTopic = () =>
     {
@@ -40,7 +60,7 @@ const Ledger = (props) =>
         dispatch(setLedgerComponent(data));
     }
 
-    const AddNewForm = (parent)=>
+    const AddNewData = (parent)=>
     {
         if( !lockCreateRecord )
         {    
@@ -50,6 +70,7 @@ const Ledger = (props) =>
                 type:parent.type,
                 level:parent.level+1,
                 value:0,
+                limit:-1,
                 child:[],
                 includeCalculate:false,
                 temp:true
@@ -67,15 +88,79 @@ const Ledger = (props) =>
         return parent;
     }
 
+    const RemoveTempRecord = (parent)=>
+    {
+
+        if( parent && parent.child && parent.child.length > 0 )
+        {
+            let found_index = -1;
+
+            for(let i=0;i<parent.child.length;i++)
+            {
+                if( parent.type === 3 ){
+                    sumValueFromChild(parent);
+                }
+
+                if( parent.child[i].temp || parent.child[i].temp === false )
+                {
+                    found_index = i;
+                    break;
+                }
+                else
+                {
+                    RemoveTempRecord(parent.child[i]);
+                }
+            }
+
+            if(found_index > -1)
+            {
+                parent.child.splice(found_index,1);
+            }
+
+        }
+
+    }
+
     const renderRows = (parent,val,i)=>
     {   
         if(val.temp)
         {
             return (
-                <DummyLedgerList data={val} key={val.title+'_'+i} setTypeModal={setTypeModal} 
-                    typeModal={typeModal} setLockRecord={setLockCreateRecord} />
+                <DummyLedgerList component={component} key={val.title+'_'+i} setTypeModal={setTypeModal} 
+                    typeModal={typeModal} setLockRecord={setLockCreateRecord} RemoveTempRecord={RemoveTempRecord}
+                    parentList={parent}
+                    />
             )
         }
+        else
+        {
+            switch(val.type)
+            {
+                case 1:
+                    return [
+                        <LedgerRowType1 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        val.child.map((v,i)=>renderRows(val,v,i))
+                    ]
+                case 2:
+                    return [
+                        <LedgerRowType2 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        val.child.map((v,i)=>renderRows(val,v,i))
+                    ]
+                case 3:
+                    return [
+                        <LedgerRowType3 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        val.child.map((v,i)=>renderRows(val,v,i))
+                    ]
+                case 4:
+                    return [
+                        <LedgerRowType4 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        val.child.map((v,i)=>renderRows(val,v,i))
+                    ]
+                default:
+                    return <View key={val.title+'_'+i}></View>
+            }
+        }
+
     }
 
     const initialScreen = ()=>
@@ -89,13 +174,14 @@ const Ledger = (props) =>
             )
         else
             return (
-                <View style={{flex:1,borderWidth:1}}>
+                <View style={{flex:1}}>
                     {/* Layer 1 >>>> Topic */}
                     <TopicLedger 
                         createFirstTopicModal={createFirstTopicModal}
                         component={component}
-                        AddNewForm={AddNewForm}
+                        AddNewForm={AddNewData}
                         setComponent={setComponent}
+                        isLock={lockCreateRecord}
                     />
 
                     {/* Layer 2 */}
@@ -109,7 +195,6 @@ const Ledger = (props) =>
 
     const testCreate = (i)=>
     {
-        console.log(i);
         if( i === 0)
             return (
                 <Text>{i}</Text>
@@ -120,7 +205,14 @@ const Ledger = (props) =>
     return (
         <View style={style.MainArea}>
             <HomeHeader />
-            {initialScreen()}
+            {
+                (component && component.title)?(
+                    <ScrollView style={{flex:1,minHeight:'80%',maxHeight:'90%'}}>
+                        {initialScreen()}
+                        <View style={{minHeight:200,maxHeight:200}}></View>
+                    </ScrollView>            
+                ):initialScreen()
+            }
             
         </View>
     )
