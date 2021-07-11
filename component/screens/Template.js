@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import MenuBar from '../elements/MenuBar';
 import Header from '../elements/Header';
 import PeriodDisplay from '../elements/PeriodDisplay';
-import ListDisplay from '../elements/ListDisplay';
+import ListTemplateDisplay from '../elements/ListTemplateDisplay';
 
 const Template = ()=> 
 {
@@ -11,7 +11,7 @@ const Template = ()=>
         <View style={style.MainArea}>
             <Header title="Task Plan Template" />
             <PeriodDisplay />
-            <ListDisplay height={'71%'} />
+            <ListTemplateDisplay height={'71%'} />
             <MenuBar />
         </View>
     )

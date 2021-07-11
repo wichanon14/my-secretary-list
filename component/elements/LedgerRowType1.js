@@ -11,9 +11,11 @@ const LedgerRowType1 = (props)=>
     return (
         <View style={{flexDirection:'row',alignItems:'center',
             marginLeft:(10*props.data.level)+'%',minWidth:'50%',marginBottom:'3%'}}>
-            <Text style={{fontSize:20,fontWeight:(props.data.level<2)?'bold':'normal'}}>
-                {props.data.title}
-            </Text>
+            <TouchableOpacity onLongPress={()=>props.edit(props.data)}>
+                <Text style={{fontSize:20,fontWeight:(props.data.level<2)?'bold':'normal'}}>
+                    {props.data.title}
+                </Text>
+            </TouchableOpacity>                
             {
                 (!props.isLock) && 
                 <TouchableOpacity style={{marginLeft:'2%'}} 

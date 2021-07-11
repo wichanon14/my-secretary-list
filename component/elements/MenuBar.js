@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useSelector } from 'react-redux';
 import Space from './Space'
 import TaskCreatedModal from './TaskCreatedModal'
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const MenuBar = ()=>
 {
@@ -11,10 +12,12 @@ const MenuBar = ()=>
     const [ selected, setSelected ] = useState('clipboard-list')
     const [ showTaskCreatedModal, setShowTaskCreatedModal ] = useState(false);
     const dateSelected = useSelector(state=>state.DateOpt);
+    const navigation = useNavigation();
+    const route = useRoute();
 
     const backgroundColor = (name) =>{
 
-        if(selected === name)
+        if(route.name === name)
             return 'red'
         return 'black'
 
@@ -23,12 +26,14 @@ const MenuBar = ()=>
     return (
         <View style={style.ScopeArea}>
             <Space size={0.3} />
-            <Icon name={'clipboard-list'} size={40} color="white" onPress={()=>setSelected('clipboard-list')}
-                style={[style.MenuArea,{backgroundColor:backgroundColor('clipboard-list')}]} />
+            <Icon name={'clipboard-list'} size={40} color="white" 
+                onPress={()=>navigation.navigate('Home')}
+                style={[style.MenuArea,{backgroundColor:backgroundColor('Home')}]} />
             
             <Space size={0.3} />
-            <Icon name={'bullseye'} size={40} color="white" onPress={()=>setSelected('bullseye')}
-                style={[style.MenuArea,{backgroundColor:backgroundColor('bullseye')}]} />
+            <Icon name={'bullseye'} size={40} color="white" 
+                onPress={()=>navigation.navigate('Template')}
+                style={[style.MenuArea,{backgroundColor:backgroundColor('Template')}]} />
             
             <Space size={0.3} />
             <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea} onPress={()=>setShowTaskCreatedModal(true)}/>

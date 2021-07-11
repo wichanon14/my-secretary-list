@@ -13,6 +13,7 @@ import LedgerRowType2 from '../elements/LedgerRowType2';
 import LedgerRowType3 from '../elements/LedgerRowType3';
 import LedgerRowType4 from '../elements/LedgerRowType4';
 import { sumValueFromChild } from '../central';
+import { AddLedgerRow } from '../database';
 
 const Ledger = (props) =>
 {
@@ -20,6 +21,7 @@ const Ledger = (props) =>
     const dispatch = useDispatch();
     const [ component, setComponent ] = useState(ledgerState.component)
     const [ componentName, setComponentName ] = useState(null);
+    const db = useSelector(state=>state.database.connection);
 
 
     // Modal flag
@@ -54,10 +56,12 @@ const Ledger = (props) =>
             type:1,
             level:0,
             value:0,
+            limit:-1,
             child:[],
-            includeCalculate:false
+            includeCalculate:0
         }
-        dispatch(setLedgerComponent(data));
+        AddLedgerRow(db,null,data,dispatch)
+        
     }
 
     const AddNewData = (parent)=>
@@ -65,7 +69,7 @@ const Ledger = (props) =>
         if( !lockCreateRecord )
         {    
             let data = {
-                id:parent.id+1,
+                id:0,
                 title:null,
                 type:parent.type,
                 level:parent.level+1,
@@ -121,39 +125,52 @@ const Ledger = (props) =>
 
     }
 
+    const editable = (data)=>
+    {
+        setLockCreateRecord(true);
+        data.temp = true;
+        console.log('edit >>>> ',data);
+        dispatch( setTmpLedger(data) );
+    }
+
     const renderRows = (parent,val,i)=>
-    {   
+    {
         if(val.temp)
         {
             return (
                 <DummyLedgerList component={component} key={val.title+'_'+i} setTypeModal={setTypeModal} 
                     typeModal={typeModal} setLockRecord={setLockCreateRecord} RemoveTempRecord={RemoveTempRecord}
-                    parentList={parent}
+                    parentList={parent} isLock={lockCreateRecord}
                     />
             )
         }
         else
         {
+
             switch(val.type)
             {
                 case 1:
+                    // Text
                     return [
-                        <LedgerRowType1 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        <LedgerRowType1 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 2:
+                    // Text and Amount
                     return [
-                        <LedgerRowType2 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        <LedgerRowType2 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 3:
+                    // Text and Sum
                     return [
-                        <LedgerRowType3 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        <LedgerRowType3 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 4:
+                    // Text, Offer and limit sum
                     return [
-                        <LedgerRowType4 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData}/>,
+                        <LedgerRowType4 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 default:
@@ -175,7 +192,7 @@ const Ledger = (props) =>
         else
             return (
                 <View style={{flex:1}}>
-                    {/* Layer 1 >>>> Topic */}
+                    {/* Topic */}
                     <TopicLedger 
                         createFirstTopicModal={createFirstTopicModal}
                         component={component}
@@ -184,22 +201,13 @@ const Ledger = (props) =>
                         isLock={lockCreateRecord}
                     />
 
-                    {/* Layer 2 */}
+                    {/* Layer Data */}
                     {
                         component.child.map((val,i)=>renderRows(component,val,i))
                     }
                     <CreateSingleTextModal display={firstTopicModal} createText={createFirstTopic} setDisplay={createFirstTopicModal} text={componentName} setText={setComponentName} />
                 </View>
             )
-    }
-
-    const testCreate = (i)=>
-    {
-        if( i === 0)
-            return (
-                <Text>{i}</Text>
-            )
-        return [testCreate(i-1),<Text>{i}</Text>]
     }
 
     return (

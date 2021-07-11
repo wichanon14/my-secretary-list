@@ -15,13 +15,15 @@ const LedgerRowType3 = (props) =>
     return (
         <View style={{flexDirection:'row',alignItems:'center',
             marginLeft:(10*props.data.level)+'%',minWidth:'50%',marginBottom:'3%'}}>
-            <Text style={{fontSize:20,fontWeight:(props.data.level<2)?'bold':'normal'}}>
-                {props.data.title} ( { }
-                <Text style={{color:(sumValueFromChild(props.data)>0)?'green':(sumValueFromChild(props.data)===0)?'black':'red'}}> 
-                    {(sumValueFromChild(props.data)>0)?'+'+sumValueFromChild(props.data):sumValueFromChild(props.data)}
+            <TouchableOpacity onLongPress={()=>props.edit(props.data)}>
+                <Text style={{fontSize:20,fontWeight:(props.data.level<2)?'bold':'normal'}}>
+                    {props.data.title} ( { }
+                    <Text style={{color:(sumValueFromChild(props.data)>0)?'green':(sumValueFromChild(props.data)===0)?'black':'red'}}> 
+                        {(sumValueFromChild(props.data)>0)?'+'+sumValueFromChild(props.data):sumValueFromChild(props.data)}
+                    </Text>
+                    { } )
                 </Text>
-                { } )
-            </Text>
+            </TouchableOpacity>
             {
                 (!props.isLock) && 
                 <TouchableOpacity style={{marginLeft:'2%'}} 

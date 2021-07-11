@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Alert } from 'react-native';
 import DisplayTypeLedgerModal from './DisplayTypeLedgerModal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,12 +7,14 @@ import LedgerTextOnlyInput from './LedgerTextOnlyInput';
 import LedgerTextAndAmountInput from './LedgerTextAndAmountInput';
 import LedgerTextAndSumResultInput from './LedgerTextAndSumResultInput';
 import LedgerTextAndPaidAmountAndLimit from './LedgerTextAndPaidAmountAndLimit';
+import { AddLedgerRow, DeleteLedgerRow, UpdateLedgerRow } from '../database';
 
 const DummyLedgerList = (props) =>
 {
 
     const LedgerState = useSelector(state=>state.Ledger)
     const dispatch = useDispatch()
+    const db = useSelector(state=>state.database.connection);
 
     const RenderInputSection = (type)=>
     {
@@ -33,26 +35,62 @@ const DummyLedgerList = (props) =>
         }
     }
 
+    const DeleteLedgerList = (data)=>
+    {
+        Alert.alert(
+            "Warning","Are you sure?",
+            [
+                {
+                    text:"Yes",
+                    onPress:()=>DeleteLedgerRow(db,data,dispatch)
+                },
+                {
+                    text:"No"
+                }
+            ]
+        )
+        
+    }
+
     const CancelLedgerListInput = ()=>
     {
-        props.RemoveTempRecord(props.component)
-        dispatch({ type:'SET_TEMP_LEDGER',payload:{} })
-        dispatch({ type:'SET_LEDGER_COMPONENT',payload:{...LedgerState.component} })
+        if(LedgerState.temp && LedgerState.temp.id > 0)
+        {
+            DeleteLedgerList(LedgerState.temp);
+        }
+        else
+        {
+            props.RemoveTempRecord(props.component)
+            dispatch({ type:'SET_TEMP_LEDGER',payload:{} })
+            dispatch({ type:'SET_LEDGER_COMPONENT',payload:{...LedgerState.component} })
+        }
         props.setLockRecord(false);
     }
 
     const SaveLedgerListInput = ()=>
     {
-        props.RemoveTempRecord(props.component)
-        delete LedgerState.temp.temp;
-        props.parentList.child.push(LedgerState.temp)
+        if( LedgerState.temp.id > 0)
+        {
+            UpdateLedgerRow(db,LedgerState.temp.parent_id,LedgerState.temp,dispatch);
+        }
+        else
+        {
+            AddLedgerRow(db,props.parentList.id,LedgerState.temp,dispatch)
+        }
         dispatch({ type:'SET_TEMP_LEDGER',payload:{} })
-        dispatch({ type:'SET_LEDGER_COMPONENT',payload:{...LedgerState.component} })
         props.setLockRecord(false);
     }
 
+    const displayStyle = ()=>
+    {
+        if(props.isLock)
+            return {display:'flex'}
+        else
+            return {display:'none'}
+    }
+
     return (
-        <View style={{marginLeft:'5%',flexDirection:'row',alignItems:'center'}}>
+        <View style={[{marginLeft:'5%',flexDirection:'row',alignItems:'center'},displayStyle()]}>
             {RenderInputSection(LedgerState.temp.type)}
             <TouchableOpacity onPress={()=>props.setTypeModal(true)}>
                 <Icon name={'list'} size={30} solid color="black" ></Icon>

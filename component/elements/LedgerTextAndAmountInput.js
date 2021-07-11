@@ -21,7 +21,7 @@ const LedgerTextAndAmountInput = (props) =>
                 }
                 style={{paddingLeft:'10%',minWidth:'100%',borderWidth:1,marginBottom:'5%',borderRadius:20}}/>
             <TextInput placeholder={'Number For Paid Amout'}
-                value={(LedgerState.temp.value)?LedgerState.temp.value.toString():''}
+                value={(LedgerState.temp.value)?LedgerState.temp.value+'':''}
                 onChangeText={(e)=>{
 
                         if( ValidFloatNumber(e) !== false )

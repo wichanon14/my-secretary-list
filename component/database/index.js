@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { RenderLedger } from '../central'
 
 const db = {
     connection:{}
@@ -27,6 +28,22 @@ const showIndex = (db,table_name) =>
             (_, { rows }) =>console.log(JSON.stringify(rows))
         );
     },error,success('index_list'))
+}
+
+const showTable = (db)=>
+{
+    console.log('show tables >>>> ');
+    db.transaction((tx)=>{
+        tx.executeSql(`SELECT 
+            name
+        FROM 
+            sqlite_master 
+        WHERE 
+            type ='table' AND 
+            name NOT LIKE 'sqlite_%';`, [],
+            (_,{rows})=>console.log(JSON.stringify(rows))
+        );
+    },error,success('table_list'))
 }
 
 export const startDatabase = () =>
@@ -74,11 +91,32 @@ export const startDatabase = () =>
             [],success('complete_index'),error
         );
 
+        // Initial Ledger structure
+        //tx.executeSql('DROP TABLE Ledger;');
+        tx.executeSql(
+            `CREATE TABLE IF NOT EXISTS Ledger (
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                parent_id INTEGER,
+                title TEXT NOT NULL,
+                "type" INTEGER NOT NULL,
+                "level" INTEGER NOT NULL,
+                value FLOAT NOT NULL,
+                "limit" FLOAT NOT NULL,
+                includeCalculate INTEGER NOT NULL,
+                create_at INTEGER NOT NULL,
+                update_at INTEGER NOT NULL
+            );`,
+            [],success('Ledger structure'),error
+        );
+
     },error,success)
     //showIndex(db,'Tasks');
+    //showTable(db);
     return db;
 }
 
+
+// ==================================== Tasks ==================================================
 export const AddMasterTask = (db,taskName,then) =>
 {
     db.transaction((tx)=>{
@@ -203,6 +241,74 @@ export const DeleteTask = (db,data,dispatch) =>
                 
                 GetAllDailyTaskByDate(db,data.date,dispatch);
 
+            },error
+        )
+    })
+}
+
+
+// ==================================== Ledger ==================================================
+export const AddLedgerRow = (db,parent,data,dispatch) =>
+{
+
+    db.transaction((tx)=>{
+        tx.executeSql(
+            `INSERT INTO Ledger
+            ( parent_id, title, "type", "level", value, "limit", includeCalculate, create_at, update_at)
+            VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate,
+                Date.parse(new Date()), Date.parse(new Date()) ],
+                ()=>{
+                    GetAllLedger(db,dispatch);
+                },error
+        )
+    })
+}
+
+export const GetAllLedger = (db,dispatch)=>
+{
+    db.transaction((tx)=>{
+        tx.executeSql(
+            `SELECT * FROM Ledger`,[],
+            (_,{rows})=>{
+                // top ledger 
+                let result = JSON.parse(JSON.stringify(rows));
+                if( result && result._array.length > 0)
+                    RenderLedger(result._array,dispatch)
+
+            },error
+        )
+    })
+}
+
+export const UpdateLedgerRow = (db,parent,data,dispatch) =>
+{
+    db.transaction((tx)=>{
+        tx.executeSql(
+            `UPDATE Ledger
+            SET parent_id=?, title=?, "type"=?, "level"=?, value=?, "limit"=?, includeCalculate=?, 
+            update_at=? WHERE id=?;
+            `,[ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, 
+                Date.parse(new Date()) ,data.id ],
+                ()=>{
+                    GetAllLedger(db,dispatch);
+                },error
+        )
+    })
+}
+
+export const DeleteLedgerRow = (db,data,dispatch) =>
+{
+    db.transaction((tx)=>{
+
+        tx.executeSql(
+            `DELETE FROM Ledger WHERE parent_id=?;`,[data.id],success,error
+        )
+
+        tx.executeSql(
+            `DELETE FROM Ledger WHERE id=?;`,[data.id],
+            ()=>{
+                GetAllLedger(db,dispatch);
             },error
         )
     })
