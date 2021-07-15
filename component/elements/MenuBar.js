@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { Modal, StyleSheet, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useSelector } from 'react-redux';
 import Space from './Space'
 import TaskCreatedModal from './TaskCreatedModal'
 import { useNavigation, useRoute } from '@react-navigation/native';
+import TemplateCreateModal from './TemplateCreateModal';
 
 const MenuBar = ()=>
 {
@@ -23,6 +24,22 @@ const MenuBar = ()=>
 
     }
 
+    const createModal = ()=>{
+        switch(route.name)
+        {
+            case 'Home':
+                return (
+                    <TaskCreatedModal date={dateSelected.DateSelected} setShow={setShowTaskCreatedModal} show={showTaskCreatedModal}/>
+                )
+            case 'Template':
+                return (
+                    <TemplateCreateModal setShow={setShowTaskCreatedModal} show={showTaskCreatedModal} />
+                )
+            default :
+                return (<View></View>)
+        }
+    }
+
     return (
         <View style={style.ScopeArea}>
             <Space size={0.3} />
@@ -31,16 +48,16 @@ const MenuBar = ()=>
                 style={[style.MenuArea,{backgroundColor:backgroundColor('Home')}]} />
             
             <Space size={0.3} />
-            <Icon name={'bullseye'} size={40} color="white" 
-                onPress={()=>navigation.navigate('Template')}
-                style={[style.MenuArea,{backgroundColor:backgroundColor('Template')}]} />
+            <Icon name={'bullseye'} size={40} color="white" onPress={()=>setSelected('bullseye')}
+                style={[style.MenuArea,{backgroundColor:backgroundColor('bullseye')}]} />
             
             <Space size={0.3} />
             <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea} onPress={()=>setShowTaskCreatedModal(true)}/>
             
             <Space size={0.5} />
-            <Icon name={'calendar-alt'} size={40} color="white" onPress={()=>setSelected('calendar-alt')}
-                style={[style.MenuArea,{backgroundColor:backgroundColor('calendar-alt')}]} />
+            <Icon name={'calendar-alt'} size={40} color="white" 
+                onPress={()=>navigation.navigate('Template')}
+                style={[style.MenuArea,{backgroundColor:backgroundColor('Template')}]} />
             
             <Space size={0.3} />
             <Icon name={'sliders-h'} size={40} color="white" onPress={()=>setSelected('sliders-h')}
@@ -48,7 +65,7 @@ const MenuBar = ()=>
             
             <Space size={0.3} />
             { // Destroy when modal hide
-            (showTaskCreatedModal)?(<TaskCreatedModal date={dateSelected.DateSelected} setShow={setShowTaskCreatedModal} show={showTaskCreatedModal}/>):(<View></View>)}
+            (showTaskCreatedModal)?(createModal()):(<View></View>)}
         </View>
     )
 }

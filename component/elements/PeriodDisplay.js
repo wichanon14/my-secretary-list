@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import { View, TouchableHighlight, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, TouchableHighlight, Text, StyleSheet } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTemplateTab } from '../action'
 
 const PeriodDisplay = () =>
 {
     const [selected,setSelected] = useState('Daily');
-    
+    const dispatch = useDispatch();
+    const template = useSelector(state=>state.Template);
+
+    useEffect(()=>{
+        setSelected(template.template_tab)
+    },[template.template_tab])
+
     const backgroundColor = (period)=>
     {
         if( period === selected )
@@ -14,13 +22,13 @@ const PeriodDisplay = () =>
 
     return (
         <View style={style.ScopeArea}>
-            <TouchableHighlight style={[{backgroundColor:backgroundColor('Daily'),width:'33%'},style.Items]} onPress={()=>setSelected('Daily')} >
+            <TouchableHighlight style={[{backgroundColor:backgroundColor('Daily'),width:'33%'},style.Items]} onPress={()=>dispatch(setTemplateTab('Daily'))} >
                 <Text style={{color:'white'}}>Daily</Text>
             </TouchableHighlight>
-            <TouchableHighlight style={[{backgroundColor:backgroundColor('Weekly'),width:'34%'},style.Items]} onPress={()=>setSelected('Weekly')}>
+            <TouchableHighlight style={[{backgroundColor:backgroundColor('Weekly'),width:'34%'},style.Items]} onPress={()=>dispatch(setTemplateTab('Weekly'))}>
                 <Text style={{color:'white'}}>Weekly</Text>
             </TouchableHighlight>
-            <TouchableHighlight style={[{backgroundColor:backgroundColor('Monthly'),width:'33%'},style.Items]} onPress={()=>setSelected('Monthly')}>
+            <TouchableHighlight style={[{backgroundColor:backgroundColor('Monthly'),width:'33%'},style.Items]} onPress={()=>dispatch(setTemplateTab('Monthly'))}>
                 <Text style={{color:'white'}}>Monthly</Text>
             </TouchableHighlight>
         </View>

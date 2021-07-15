@@ -1,3 +1,13 @@
+/* =============================== Template Action =================================== */
+export const setTemplateTab = (data) =>
+{
+    return {
+        type: "SET_TEMPLATE_TAB",
+        payload: data
+    }
+}
+
+
 /* =============================== Ledger Action =================================== */
 export const setLedgerComponent = (data) =>
 {

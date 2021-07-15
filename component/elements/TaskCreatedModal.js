@@ -26,7 +26,6 @@ const TaskCreatedModal = (props)=>
             // If it's a new task
             if(!props.data)
             {
-                console.log('new task >>> ',task);
                 let taskObj = {
                     date:toyyyyMMDD(props.date),
                     task_name:task
@@ -37,7 +36,6 @@ const TaskCreatedModal = (props)=>
             // else -> It's exists task -> edit task
             else
             {
-                console.log('exist task >>> ',task);
                 let taskObj = props.data;
                 if(taskObj.task_name !== task)
                 {

@@ -31,7 +31,6 @@ const WeeklyDisplay = ()=>{
         {
             let day = new Date( dateSelected-(i*86400000) )
             newDayOfWeek.push(day);
-            //console.log(day,day.getMonth())
         }
         
         // selected date or current date
@@ -42,7 +41,6 @@ const WeeklyDisplay = ()=>{
         {
             let day = new Date( dateSelected+(i*86400000) )
             newDayOfWeek.push(day);
-            //console.log(day,day.getMonth())
         }
 
         setDayOfWeek([...newDayOfWeek]);

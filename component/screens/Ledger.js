@@ -129,7 +129,6 @@ const Ledger = (props) =>
     {
         setLockCreateRecord(true);
         data.temp = true;
-        console.log('edit >>>> ',data);
         dispatch( setTmpLedger(data) );
     }
 

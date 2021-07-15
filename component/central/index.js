@@ -9,12 +9,26 @@ export const toyyyyMMDD = (date) =>
     return year+'-'+month+'-'+day
 }
 
+export const toDaysAbbr = (day_of_week)=>
+{
+    switch(day_of_week)
+    {
+        case 1: return 'S';
+        case 2: return 'M';
+        case 3: return 'T';
+        case 4: return 'W';
+        case 5: return 'Th';
+        case 6: return 'F';
+        case 7: return 'Sa';
+        default : return '';
+    }
+}
+
 export const ValidFloatNumber = (input) =>
 {
     let amount=-1;
 
     amount = parseFloat(input);
-    console.log(amount);
     if( amount.toString() === "NaN" )
         return false;
 

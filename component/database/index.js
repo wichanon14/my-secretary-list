@@ -109,6 +109,20 @@ export const startDatabase = () =>
             [],success('Ledger structure'),error
         );
 
+        // Initial Task Template structure
+        //tx.executeSql('DROP TABLE Template;;');
+        tx.executeSql(
+            `CREATE TABLE IF NOT EXISTS Template(
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                task INTEGER NOT NULL,
+                template_type TEXT NOT NULL,
+                frequency TEXT NOT NULL,
+                create_at INTEGER NOT NULL,
+                update_at INTEGER NOT NULL
+            );`,
+            [],success('Template structure'),error
+        );
+
     },error,success)
     //showIndex(db,'Tasks');
     //showTable(db);
@@ -313,3 +327,45 @@ export const DeleteLedgerRow = (db,data,dispatch) =>
         )
     })
 }
+
+
+
+// ==================================== Template ==================================================
+
+export const GetTemplate = (db,type,dispatch)=>{
+
+    db.transaction((tx)=>{
+        tx.executeSql(
+            `SELECT * FROM Template WHERE type = ?`,[type],
+            (_,{ rows })=>{
+                console.log(JSON.stringify(rows));
+            },error
+        )
+    })
+
+}
+
+export const AddTemplate = (db,data,dispatch)=>{
+
+    AddMasterTask( db, data.task_name, (db,data,dispatch)=>{
+
+        db.transaction((tx)=>{
+            let sql = `INSERT INTO Template(task,template_type,frequency,create_at,update_at) 
+            SELECT id,'${data.type}','${data.frequency}',${Date.parse(new Date())},${Date.parse(new Date())}
+            FROM Task_Master 
+            where task_name = '${data.task_name}' AND NOT EXISTS (
+                SELECT 1 FROM Template WHERE task = Task_Master.id AND type = '${data.type}' 
+            ); `;
+
+            tx.executeSql(sql,[],(db,data,dispatch)=>{
+                GetTemplate(db,data.type,dispatch);
+            },error)
+        })
+        
+    })
+
+}
+
+export const EditTemplate = (db,data)=>{}
+
+export const DeleteTemplate = (db,data)=>{}
