@@ -130,13 +130,13 @@ const TemplateMonthlyArea = (props)=>
     {
         if( type === 'date')
             return [
-                <View style={{minHeight:15}}></View>,
-                <View style={{minHeight:50,maxHeight:50,width:'80%',borderWidth:1,borderRadius:30,marginLeft:'10%'}}>
+                <View key={'date_top'} style={{minHeight:15}}></View>,
+                <View key={'date_content'} style={{minHeight:50,maxHeight:50,width:'80%',borderWidth:1,borderRadius:30,marginLeft:'10%'}}>
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         {DateGenerate()}
                     </ScrollView>
                 </View>,
-                <View style={{minHeight:35,marginLeft:'10%',flexDirection:'row'}}>
+                <View key={'date_period'} style={{minHeight:35,marginLeft:'10%',flexDirection:'row'}}>
                     {periodStore.length>0&&<Text>{"Every >> "}</Text>}
                     {periodStore.map((val,i)=>(
                         <Text style={{marginRight:'1%'}}>{val.date}</Text>

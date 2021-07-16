@@ -15,6 +15,11 @@ const TemplateReducer = (state = TemplateState, action ) =>
                 ...state,
                 template_tab:action.payload
             }
+        case 'SET_DAILY_TEMPLATE':
+            return {
+                ...state,
+                daily_template:action.payload
+            }
         default: 
             return state;
     }

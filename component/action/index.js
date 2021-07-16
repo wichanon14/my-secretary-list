@@ -7,6 +7,14 @@ export const setTemplateTab = (data) =>
     }
 }
 
+export const setDailyTemplate = (data) =>
+{
+    return {
+        type: "SET_DAILY_TEMPLATE",
+        payload: data
+    }
+}
+
 
 /* =============================== Ledger Action =================================== */
 export const setLedgerComponent = (data) =>

@@ -2,7 +2,7 @@ import React from 'react'
 import { View, StyleSheet } from 'react-native';
 import HomeHeader from '../elements/HomeHeader'
 import ListDisplay from '../elements/ListDisplay';
-import WeeklyDisplay from '../elements/WeeklyDisplay';
+import WeeklyDisplayBar from '../elements/WeeklyDisplayBar';
 import MenuBar from '../elements/MenuBar'
 
 function Home(){
@@ -10,7 +10,7 @@ function Home(){
     return (
         <View style={style.HomeArea}>
             <HomeHeader/>
-            <WeeklyDisplay/>
+            <WeeklyDisplayBar/>
             <ListDisplay height={'57%'}/>
             <MenuBar />
         </View>

@@ -9,7 +9,6 @@ const TemplateCreateModal = (props)=>
 {
 
     const template = useSelector(state=>state.Template)
-    const [ backdropHeight, setBackdropHeight ] = useState('40%');
     
 
     const renderModal = ()=>{
@@ -17,11 +16,11 @@ const TemplateCreateModal = (props)=>
         switch(template.template_tab)
         {
             case 'Daily':
-                return (<TemplateDailyArea />)
+                return (<TemplateDailyArea setShow={props.setShow}/>)
             case 'Weekly':
-                return (<TemplateWeeklyArea />)
+                return (<TemplateWeeklyArea setShow={props.setShow}/>)
             case 'Monthly':
-                return (<TemplateMonthlyArea />)
+                return (<TemplateMonthlyArea setShow={props.setShow}/>)
             default:
                 return (<View></View>)
         }

@@ -1,8 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux';
+import { AddTemplate } from '../database';
 
 const TemplateDailyArea = (props)=>
 {
+
+    const [ task_name, setTaskName ] = useState(null)
+    const [ displayWarning, setDisplayWarning ] = useState(false)
+    const db = useSelector(state=>state.database.connection)
+    const dispatch = useDispatch()
+    const template = useSelector(state=>state.Template)
+
+    useEffect(()=>{
+        if(task_name && task_name.length > 0 && task_name.trim() )   
+            setDisplayWarning(false)
+    },[task_name])
+
+    useEffect(()=>{
+        
+    },[template.daily_template])
+
+    const createDailyTask = ()=>
+    {
+        if(task_name)
+        {
+            let data = {
+                task_name:task_name,
+                type:'daily',
+                period:'',
+            }
+            AddTemplate(db,data,dispatch,props.setShow)
+        }
+        else
+        {
+            setDisplayWarning(true)
+        }
+    }
+
     return (
         <View style={style.modalArea}>
             <View style={style.topicArea}>
@@ -11,9 +46,13 @@ const TemplateDailyArea = (props)=>
             
             <View style={{flex:0.3}}></View>
 
-            <TextInput height={50} placeholder="Task Name" style={style.taskInput}/>
-
-            <TouchableOpacity style={style.createTaskButton}>
+            <TextInput height={50} placeholder="Task Name" style={style.taskInput} onChangeText={(e)=>setTaskName(e)}/>
+            {
+                (displayWarning)&&<View style={{marginLeft:'10%'}}>
+                    <Text style={{color:'red'}}>Sorry, We can not create empty template.</Text>
+                </View>
+            }
+            <TouchableOpacity style={style.createTaskButton} onPress={()=>createDailyTask()}>
                 <Text style={{color:'white',fontSize:20}}>CREATE</Text>
             </TouchableOpacity>
             

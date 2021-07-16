@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { RenderLedger } from '../central'
+import { setDailyTemplate } from '../action'
 
 const db = {
     connection:{}
@@ -110,13 +111,13 @@ export const startDatabase = () =>
         );
 
         // Initial Task Template structure
-        //tx.executeSql('DROP TABLE Template;;');
+        //tx.executeSql('DROP TABLE Template;');
         tx.executeSql(
             `CREATE TABLE IF NOT EXISTS Template(
                 id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                 task INTEGER NOT NULL,
                 template_type TEXT NOT NULL,
-                frequency TEXT NOT NULL,
+                period TEXT NOT NULL,
                 create_at INTEGER NOT NULL,
                 update_at INTEGER NOT NULL
             );`,
@@ -126,6 +127,7 @@ export const startDatabase = () =>
     },error,success)
     //showIndex(db,'Tasks');
     //showTable(db);
+    //GetMasterTask(db)
     return db;
 }
 
@@ -140,6 +142,21 @@ export const AddMasterTask = (db,taskName,then) =>
             [taskName,Date.parse(new Date()),Date.parse(new Date())],
             then,then
         )
+    },error,success)
+}
+
+export const GetMasterTask = (db) =>
+{
+    db.transaction((tx)=>{
+
+        // Fetch selected tasks
+        tx.executeSql(`
+            SELECT * FROM Task_Master;
+        `, [], 
+            (_, { rows }) =>{
+                console.log('data >>> ',JSON.parse(JSON.stringify(rows))._array)
+            }
+        );
     },error,success)
 }
 
@@ -332,36 +349,46 @@ export const DeleteLedgerRow = (db,data,dispatch) =>
 
 // ==================================== Template ==================================================
 
-export const GetTemplate = (db,type,dispatch)=>{
+export const GetTemplate = (db,type,dispatch,setShow)=>{
 
     db.transaction((tx)=>{
+
         tx.executeSql(
-            `SELECT * FROM Template WHERE type = ?`,[type],
+            `SELECT Template.*, Task_Master.task_name 
+            FROM Template 
+            INNER JOIN Task_Master on Task_Master.id = Template.task 
+            WHERE template_type = ?`,[type],
             (_,{ rows })=>{
-                console.log(JSON.stringify(rows));
+                if(rows && rows._array )
+                    dispatch(setDailyTemplate(rows._array))
+                if( setShow )
+                    setShow(false)
             },error
         )
     })
 
 }
 
-export const AddTemplate = (db,data,dispatch)=>{
+export const AddTemplate = (db,data,dispatch,setShow)=>{
 
-    AddMasterTask( db, data.task_name, (db,data,dispatch)=>{
+    db.transaction(()=>{
 
-        db.transaction((tx)=>{
-            let sql = `INSERT INTO Template(task,template_type,frequency,create_at,update_at) 
-            SELECT id,'${data.type}','${data.frequency}',${Date.parse(new Date())},${Date.parse(new Date())}
-            FROM Task_Master 
-            where task_name = '${data.task_name}' AND NOT EXISTS (
-                SELECT 1 FROM Template WHERE task = Task_Master.id AND type = '${data.type}' 
-            ); `;
+        AddMasterTask( db, data.task_name, ()=>{
 
-            tx.executeSql(sql,[],(db,data,dispatch)=>{
-                GetTemplate(db,data.type,dispatch);
-            },error)
+            db.transaction((tx)=>{
+                let sql = `INSERT INTO Template(task,template_type,period,create_at,update_at) 
+                SELECT id,'${data.type}','${data.period}',${Date.parse(new Date())},${Date.parse(new Date())}
+                FROM Task_Master 
+                where task_name = '${data.task_name}' AND NOT EXISTS (
+                    SELECT 1 FROM Template WHERE task = Task_Master.id AND template_type = '${data.type}' 
+                ); `;
+
+                tx.executeSql(sql,[],()=>{
+                    GetTemplate(db,data.type,dispatch,setShow);
+                },error)
+            })
+            
         })
-        
     })
 
 }

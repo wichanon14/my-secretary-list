@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getDayAbbr } from '../label'
 import { setDateSelected } from '../action'
 
-const WeeklyDisplay = ()=>{
+const WeeklyDisplayBar = ()=>{
 
     const dateOpt = useSelector(state=>state.DateOpt);
     const dispatch = useDispatch()
@@ -91,4 +91,4 @@ const style = StyleSheet.create({
     }
 })
 
-export default WeeklyDisplay;
+export default WeeklyDisplayBar;
