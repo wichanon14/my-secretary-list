@@ -14,15 +14,15 @@ const style = StyleSheet.create({
     areaAndAlign : {
         flexDirection:'row',
         width:'100%',
-        height:'11%',
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:'black'
+        height:'18%',
+        paddingLeft:'5%',
+        paddingBottom:'4%',
+        alignItems:'flex-end'
     },
     TopicStyle : {
-        fontSize: 20,
+        fontSize: 35,
         fontWeight:'bold',
-        color:'white'
+        color:'black'
     }        
 })
 

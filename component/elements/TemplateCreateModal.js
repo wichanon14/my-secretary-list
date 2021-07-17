@@ -15,12 +15,12 @@ const TemplateCreateModal = (props)=>
 
         switch(template.template_tab)
         {
-            case 'Daily':
-                return (<TemplateDailyArea setShow={props.setShow}/>)
-            case 'Weekly':
-                return (<TemplateWeeklyArea setShow={props.setShow}/>)
-            case 'Monthly':
-                return (<TemplateMonthlyArea setShow={props.setShow}/>)
+            case 'daily':
+                return (<TemplateDailyArea setShow={props.setShow} edit={props.edit} data={props.data}/>)
+            case 'weekly':
+                return (<TemplateWeeklyArea setShow={props.setShow} edit={props.edit} data={props.data}/>)
+            case 'monthly':
+                return (<TemplateMonthlyArea setShow={props.setShow} edit={props.edit} data={props.data}/>)
             default:
                 return (<View></View>)
         }
@@ -31,11 +31,11 @@ const TemplateCreateModal = (props)=>
     {
         switch(template.template_tab)
         {
-            case 'Daily':
+            case 'daily':
                 return '50%'
-            case 'Weekly':
+            case 'weekly':
                 return '50%'
-            case 'Monthly':
+            case 'monthly':
                 return '30%'
             default:
                 return '40%'

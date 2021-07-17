@@ -15,6 +15,22 @@ export const setDailyTemplate = (data) =>
     }
 }
 
+export const setWeeklyTemplate = (data) =>
+{
+    return {
+        type: "SET_WEEKLY_TEMPLATE",
+        payload: data
+    }
+}
+
+export const setMonthlyTemplate = (data) =>
+{
+    return {
+        type: "SET_MONTHLY_TEMPLATE",
+        payload: data
+    }
+}
+
 
 /* =============================== Ledger Action =================================== */
 export const setLedgerComponent = (data) =>

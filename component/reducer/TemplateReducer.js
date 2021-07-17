@@ -1,5 +1,5 @@
 const TemplateState = {
-    template_tab:'Daily',
+    template_tab:'daily',
     daily_template:[],
     weekly_template:[],
     monthly_template:[]
@@ -19,6 +19,16 @@ const TemplateReducer = (state = TemplateState, action ) =>
             return {
                 ...state,
                 daily_template:action.payload
+            }
+        case 'SET_WEEKLY_TEMPLATE':
+            return {
+                ...state,
+                weekly_template:action.payload
+            }
+        case 'SET_MONTHLY_TEMPLATE':
+            return {
+                ...state,
+                monthly_template:action.payload
             }
         default: 
             return state;

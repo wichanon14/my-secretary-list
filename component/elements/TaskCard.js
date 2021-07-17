@@ -79,7 +79,11 @@ const style = StyleSheet.create({
         marginTop:'5%',
         justifyContent:'center',
         padding:'5%',
-        backgroundColor:'#FFFF'
+        backgroundColor:'#FFFF',
+        shadowColor: '#000',
+        shadowOpacity: 0.5,
+        shadowRadius: 5,
+        elevation: 2,
     },
     Message:{
         fontSize:15,

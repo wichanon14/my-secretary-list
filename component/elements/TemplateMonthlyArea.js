@@ -1,18 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { useDispatch, useSelector } from 'react-redux';
 import { toDaysAbbr } from '../central';
+import { AddTemplate, EditTemplate, DeleteTemplate } from '../database'
 
 const TemplateMonthlyArea = (props)=>
 {
-    const [ periodType, setPeriodType ] = useState('date');
-    const [ periodStore, setPeriodStore ] = useState([]);
+    const [ periodType, setPeriodType ] = useState(()=>{
+        if(props.edit)
+        {
+            let period = props.data.period;
+            let found = period.indexOf("week");
+            if(found!==-1)
+            {
+                return 'day'
+            }
+            else
+            {
+                return 'date'
+            }
+        }
+        else
+            return 'date'
+    });
+    const [ periodStore, setPeriodStore ] = useState((props.edit)?JSON.parse(props.data.period):[]);
     const [ weekTempSelect, setWeekTempSelect ] = useState(null);
     const [ dayTempSelect, setDayTempSelect ] = useState(null);
+    const [ task_name, setTaskName ] = useState((props.edit)?props.data.task_name:null)
+    const [ emptyTaskWarning, setEmptyTaskWarning ] = useState(false)
+    const [ emptyPeriodWarning, setEmptyPeriodWarning ] = useState(false)
+    const db = useSelector(state=>state.database.connection)
+    const dispatch = useDispatch()
 
     useEffect(()=>{
-        setPeriodStore([]);
-    },[periodType])
+        if(task_name)
+            setEmptyTaskWarning(false)
+        if(periodStore.length > 0 )
+            setEmptyPeriodWarning(false)
+    },[task_name,periodStore])
 
     useEffect(()=>{
         if( weekTempSelect && dayTempSelect )
@@ -22,6 +48,30 @@ const TemplateMonthlyArea = (props)=>
             setDayTempSelect(null);
         }
     },[weekTempSelect,dayTempSelect])
+
+    const createMonthlyTemplate = ()=>
+    {
+        if( task_name && periodStore.length>0 )
+        {
+            let data = {
+                task_name:task_name,
+                type:'monthly',
+                period:JSON.stringify(periodStore),
+            }
+            AddTemplate(db,data,dispatch,props.setShow)
+        }
+        else
+        {
+            if(!task_name)
+            {
+                setEmptyTaskWarning(true)
+            }
+            else
+            {
+                setEmptyPeriodWarning(true)
+            }
+        }
+    }
 
     const addDateObj = (date)=>
     {
@@ -139,7 +189,7 @@ const TemplateMonthlyArea = (props)=>
                 <View key={'date_period'} style={{minHeight:35,marginLeft:'10%',flexDirection:'row'}}>
                     {periodStore.length>0&&<Text>{"Every >> "}</Text>}
                     {periodStore.map((val,i)=>(
-                        <Text style={{marginRight:'1%'}}>{val.date}</Text>
+                        <Text key={`date_${i}`} style={{marginRight:'1%'}}>{val.date}</Text>
                     ))}
                 </View>
             ]
@@ -155,7 +205,7 @@ const TemplateMonthlyArea = (props)=>
                     <View style={{minHeight:20,marginLeft:'10%',flexDirection:'row'}}>
                         {periodStore.length>0&&<Text>{"Every >> "}</Text>}
                         {periodStore.map((val,i)=>(
-                            <Text style={{marginRight:'1%'}}>W{val.week}{toDaysAbbr(val.day)}</Text>
+                            <Text key={`W${i}_`} style={{marginRight:'1%'}}>W{val.week}{toDaysAbbr(val.day)}</Text>
                         ))}
                     </View>
                 </View>
@@ -226,6 +276,50 @@ const TemplateMonthlyArea = (props)=>
 
     }
 
+    const renderCreateButton = ()=>
+    {
+        console.log('edit >>> ',props.edit,props.data)
+        if(!props.edit)
+            return (
+                <TouchableOpacity style={style.createTaskButton} onPress={()=>createMonthlyTemplate()}>
+                    <Text style={{color:'white',fontSize:20}}>CREATE</Text>
+                </TouchableOpacity>
+            )
+        
+        return (
+            <View style={{flexDirection:'row',width:'100%',alignItems:'center',justifyContent:'space-around'}}>
+                <TouchableOpacity style={[style.EditButton,{backgroundColor:'black'}]} onPress={()=>updateMonthlyTemplate()}>
+                    <Text style={{color:'white',fontSize:20}}>UPDATE</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[style.EditButton,{backgroundColor:'red'}]} onPress={()=>DeleteTemplate(db,props.data,dispatch,props.setShow)}>
+                    <Text style={{color:'white',fontSize:20}}>DELETE</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    const updateMonthlyTemplate = ()=>
+    {
+        if( task_name && periodStore.length>0 )
+        {
+            let data = props.data;
+            data.task_name = task_name;
+            data.period = JSON.stringify(periodStore);
+            EditTemplate(db,data,dispatch,props.setShow)
+        }
+        else
+        {
+            if(!task_name)
+            {
+                setEmptyTaskWarning(true)
+            }
+            else
+            {
+                setEmptyPeriodWarning(true)
+            }
+        }
+    }
+
     return (
         <View style={style.modalArea}>
 
@@ -233,15 +327,16 @@ const TemplateMonthlyArea = (props)=>
                 <Text style={{fontSize:20,fontWeight:'bold'}}>MONTHLY TEMPLATE</Text>
             </View>
             <View style={{flex:0.1}}></View>
-            <TextInput height={50} placeholder="Task Name" style={style.taskInput}/>
+            <TextInput height={50} placeholder="Task Name" onChangeText={(e)=>setTaskName(e)}
+                value={task_name} style={style.taskInput}/>
             <View style={{flex:0.05}}></View>
             <View style={{minHeight:30,width:'80%',marginLeft:'10%',flexDirection:'row',alignItems:'center'}}>
-                <TouchableOpacity style={{marginLeft:'5%'}} onPress={()=>setPeriodType('date')}>
+                <TouchableOpacity style={{marginLeft:'5%'}} onPress={()=>[setPeriodStore([]),setPeriodType('date')]}>
                     <Text>
                         <Icon name={renderTypeChoice('date')} size={20} regular color="black" />  date
                     </Text>                    
                 </TouchableOpacity>
-                <TouchableOpacity style={{marginLeft:'5%'}} onPress={()=>setPeriodType('day')}>
+                <TouchableOpacity style={{marginLeft:'5%'}} onPress={()=>[setPeriodStore([]),setPeriodType('day')]}>
                     <Text>
                         <Icon name={renderTypeChoice('day')} size={20} regular color="black" />  day
                     </Text>                    
@@ -249,9 +344,17 @@ const TemplateMonthlyArea = (props)=>
             </View>
             <View style={{flex:0.15}}></View>
             {renderPeriod(periodType)}
-            <TouchableOpacity style={style.createTaskButton}>
-                <Text style={{color:'white',fontSize:20}}>CREATE</Text>
-            </TouchableOpacity>
+            <View style={{maxHeight:40,flex:0.1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                {
+                    emptyTaskWarning && <Text style={{color:'red'}}>Can't create empty task.</Text>
+                }
+                {
+                    emptyPeriodWarning && <Text style={{color:'red'}}>Can't create task on non-selected day.</Text>
+                }
+            </View>
+            {
+                renderCreateButton()
+            }
         </View>
     )
 }
@@ -292,6 +395,15 @@ const style = StyleSheet.create({
         height:'15%',
         backgroundColor:'black',
         width:'80%',
+        alignSelf:'center',
+        borderRadius:10
+    },
+    EditButton:{
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:'5%',
+        height:'45%',
+        width:'40%',
         alignSelf:'center',
         borderRadius:10
     },

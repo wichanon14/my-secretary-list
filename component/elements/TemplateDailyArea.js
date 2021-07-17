@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { AddTemplate } from '../database';
+import { AddTemplate, EditTemplate, DeleteTemplate } from '../database';
 
 const TemplateDailyArea = (props)=>
 {
 
-    const [ task_name, setTaskName ] = useState(null)
+    const [ task_name, setTaskName ] = useState((props.edit)?props.data.task_name:null)
     const [ displayWarning, setDisplayWarning ] = useState(false)
     const db = useSelector(state=>state.database.connection)
     const dispatch = useDispatch()
@@ -21,7 +21,7 @@ const TemplateDailyArea = (props)=>
         
     },[template.daily_template])
 
-    const createDailyTask = ()=>
+    const createDailyTemplate = ()=>
     {
         if(task_name)
         {
@@ -38,6 +38,42 @@ const TemplateDailyArea = (props)=>
         }
     }
 
+    const renderCreateButton = ()=>
+    {
+        console.log('edit >>> ',props.edit,props.data)
+        if(!props.edit)
+            return (
+                <TouchableOpacity style={style.createTaskButton} onPress={()=>createDailyTemplate()}>
+                    <Text style={{color:'white',fontSize:20}}>CREATE</Text>
+                </TouchableOpacity>
+            )
+        
+        return (
+            <View style={{flexDirection:'row',width:'100%',alignItems:'center',justifyContent:'space-around'}}>
+                <TouchableOpacity style={[style.EditButton,{backgroundColor:'black'}]} onPress={()=>updateDailyTemplate()}>
+                    <Text style={{color:'white',fontSize:20}}>UPDATE</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[style.EditButton,{backgroundColor:'red'}]} onPress={()=>DeleteTemplate(db,props.data,dispatch,props.setShow)}>
+                    <Text style={{color:'white',fontSize:20}}>DELETE</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    const updateDailyTemplate = ()=>
+    {
+        if(task_name)
+        {
+            let data = props.data;
+            data.task_name = task_name;
+            EditTemplate(db,data,dispatch,props.setShow)
+        }
+        else
+        {
+            setDisplayWarning(true)
+        }
+    }
+
     return (
         <View style={style.modalArea}>
             <View style={style.topicArea}>
@@ -46,15 +82,16 @@ const TemplateDailyArea = (props)=>
             
             <View style={{flex:0.3}}></View>
 
-            <TextInput height={50} placeholder="Task Name" style={style.taskInput} onChangeText={(e)=>setTaskName(e)}/>
+            <TextInput height={50} placeholder="Task Name" value={task_name}
+                style={style.taskInput} onChangeText={(e)=>setTaskName(e)}/>
             {
-                (displayWarning)&&<View style={{marginLeft:'10%'}}>
+                (displayWarning)&&<View style={{width:'100%',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                     <Text style={{color:'red'}}>Sorry, We can not create empty template.</Text>
                 </View>
             }
-            <TouchableOpacity style={style.createTaskButton} onPress={()=>createDailyTask()}>
-                <Text style={{color:'white',fontSize:20}}>CREATE</Text>
-            </TouchableOpacity>
+            {
+                renderCreateButton()
+            }
             
         </View>
     )
@@ -88,6 +125,15 @@ const style = StyleSheet.create({
         height:'15%',
         backgroundColor:'black',
         width:'80%',
+        alignSelf:'center',
+        borderRadius:10
+    },
+    EditButton:{
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:'5%',
+        height:'50%',
+        width:'40%',
         alignSelf:'center',
         borderRadius:10
     },

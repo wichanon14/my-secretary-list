@@ -9,9 +9,9 @@ const Template = ()=>
 {
     return (
         <View style={style.MainArea}>
-            <Header title="Task Plan Template" />
+            <Header title="Task Template" />
             <PeriodDisplay />
-            <ListTemplateDisplay height={'71%'} />
+            <ListTemplateDisplay height={'61%'} />
             <MenuBar />
         </View>
     )

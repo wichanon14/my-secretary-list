@@ -1,18 +1,43 @@
 import React from 'react'
 import { ScrollView, View, StyleSheet, Text } from 'react-native'
 import { useSelector } from 'react-redux'
+import TemplateCard from './TemplateCard';
 
 const ListDisplay = (props)=>{
 
     const templates = useSelector(state=>state.Template)
+    
 
     const style = StyleSheet.create({
         ListArea:{
             minHeight:props.height,
             maxHeight:props.height,
-            backgroundColor:"#d6d6d6"
+            //backgroundColor:"#d6d6d6"
         }
     })
+
+    const renderTemplateLists = ()=>
+    {
+        switch(templates.template_tab)
+        {
+            case 'daily' : return (
+                templates.daily_template.map((val,i)=>(
+                    <TemplateCard key={val.id} data={val} />
+                ))
+            )
+            case 'weekly' : return (
+                templates.weekly_template.map((val,i)=>(
+                    <TemplateCard key={val.id} data={val}/>
+                ))
+            )
+            case 'monthly' : return (
+                templates.monthly_template.map((val,i)=>(
+                    <TemplateCard key={val.id} data={val}/>
+                ))
+            )
+
+        }
+    }
 
     return (
         <View style={style.ListArea}>
@@ -22,11 +47,10 @@ const ListDisplay = (props)=>{
                             (val)=>val.date===toyyyyMMDD(dateOpt.DateSelected)
                         ).map((val,i)=><TaskCard data={val} key={"task_"+i}/>    
                     )*/
-                    templates.daily_template.map((val,i)=>(
-                        <Text>{val.task_name}</Text>
-                    ))
+                    renderTemplateLists()
+
                 }
-                <View style={{minHeight:30}}></View>
+                <View style={{minHeight:100}}></View>
             </ScrollView>
         </View>
     )

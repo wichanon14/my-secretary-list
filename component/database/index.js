@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { RenderLedger } from '../central'
-import { setDailyTemplate } from '../action'
+import { setDailyTemplate, setWeeklyTemplate, setMonthlyTemplate } from '../action'
 
 const db = {
     connection:{}
@@ -154,7 +154,7 @@ export const GetMasterTask = (db) =>
             SELECT * FROM Task_Master;
         `, [], 
             (_, { rows }) =>{
-                console.log('data >>> ',JSON.parse(JSON.stringify(rows))._array)
+                /*console.log('data >>> ',JSON.parse(JSON.stringify(rows))._array)*/
             }
         );
     },error,success)
@@ -200,8 +200,6 @@ export const GetAllDailyTaskByDate = (db,date,dispatch) =>
             ORDER BY complete
         `, [date], 
             (_, { rows }) =>{
-
-                console.log('data >>> ',JSON.parse(JSON.stringify(rows))._array)
                 dispatch({
                     type : "SET_TASK_LIST",
                     payload : JSON.parse(JSON.stringify(rows))._array
@@ -356,13 +354,24 @@ export const GetTemplate = (db,type,dispatch,setShow)=>{
         tx.executeSql(
             `SELECT Template.*, Task_Master.task_name 
             FROM Template 
-            INNER JOIN Task_Master on Task_Master.id = Template.task 
+            INNER JOIN Task_Master on Template.task = Task_Master.id 
             WHERE template_type = ?`,[type],
             (_,{ rows })=>{
-                if(rows && rows._array )
-                    dispatch(setDailyTemplate(rows._array))
+
                 if( setShow )
                     setShow(false)
+                    
+                console.log(rows._array)
+                if(rows && rows._array )
+                {
+                    switch(type)
+                    {
+                        case 'daily': dispatch(setDailyTemplate(rows._array)); break;
+                        case 'weekly': dispatch(setWeeklyTemplate(rows._array)); break;
+                        case 'monthly': dispatch(setMonthlyTemplate(rows._array)); break;
+                        default : break;
+                    }
+                }
             },error
         )
     })
@@ -393,6 +402,41 @@ export const AddTemplate = (db,data,dispatch,setShow)=>{
 
 }
 
-export const EditTemplate = (db,data)=>{}
+export const EditTemplate = (db,data,dispatch,setShow)=>
+{
+    db.transaction(()=>{
 
-export const DeleteTemplate = (db,data)=>{}
+        AddMasterTask( db, data.task_name, ()=>{
+
+            db.transaction((tx)=>{
+                let sql = `SELECT id FROM Task_Master WHERE task_name = '${data.task_name}'`;
+                tx.executeSql(sql,[],(_,{rows})=>{
+                    
+                    console.log('rows >>> ',rows._array)
+                    if(rows._array && rows._array.length > 0)
+                    {
+                        let id = rows._array[0].id;
+                        db.transaction((tx)=>{
+                            let sql = `UPDATE Template SET task=${id}, period = '${data.period}', update_at=${Date.parse(new Date())} WHERE id = ${data.id}`;
+                            tx.executeSql(sql,[],()=>{
+                                GetTemplate(db,data.template_type,dispatch,setShow);
+                            })
+                        })
+                    }
+
+                },error)
+            })
+            
+        })
+    })
+}
+
+export const DeleteTemplate = (db,data,dispatch,setShow)=>
+{
+    db.transaction((tx)=>{
+        let sql = `DELETE FROM Template WHERE id = ${data.id}`;
+        tx.executeSql(sql,[],()=>{
+            GetTemplate(db,data.template_type,dispatch,setShow);
+        },error);
+    })
+}
