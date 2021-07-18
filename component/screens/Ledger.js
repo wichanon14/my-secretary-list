@@ -20,7 +20,11 @@ const Ledger = (props) =>
     const ledgerState = useSelector(state=>state.Ledger);
     const dispatch = useDispatch();
     const [ component, setComponent ] = useState(ledgerState.component)
-    const [ componentName, setComponentName ] = useState(null);
+    const [ componentName, setComponentName ] = useState(()=>{
+        if(ledgerState && ledgerState.component && ledgerState.component.title )
+            return ledgerState.component.title
+        return null;
+    });
     const db = useSelector(state=>state.database.connection);
 
 

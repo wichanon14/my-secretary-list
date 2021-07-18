@@ -1,6 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import { RenderLedger } from '../central'
 import { setDailyTemplate, setWeeklyTemplate, setMonthlyTemplate } from '../action'
+import { useSelector } from 'react-redux';
 
 const db = {
     connection:{}

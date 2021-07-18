@@ -35,7 +35,7 @@ export default function App() {
     <MenuProvider customStyles={menuProviderStyles}>
       <Provider store={store} >
         <NavigationContainer>
-          <Stack.Navigator headerMode={'none'} initialRouteName={'Template'}>
+          <Stack.Navigator headerMode={'none'} initialRouteName={'Ledger'}>
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Template" component={Template} />
             <Stack.Screen name="Ledger" component={Ledger} />

@@ -1,3 +1,12 @@
+/* =============================== Profile Action =================================== */
+export const setProfileLedgerPeriod = (data)=>
+{
+    return {
+        type: "SET_LEDGER_PERIOD",
+        payload: data
+    }
+}
+
 /* =============================== Template Action =================================== */
 export const setTemplateTab = (data) =>
 {
