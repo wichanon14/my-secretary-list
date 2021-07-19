@@ -4,12 +4,13 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { getMonthName } from '../label'
 import { toyyyyMMDD } from '../central'
 import { useDispatch, useSelector } from 'react-redux';
-import { setProfileLedgerPeriod } from '../action';
+import { UpdateProfileSetting } from '../database'
 
 const CalendarModal = (props)=>
 {
     const profileSetting = useSelector(state=>state.ProfileSetting)
     const dispatch = useDispatch()
+    const db = useSelector(state=>state.database.connection);
     const [ month, setMonth ] = useState(()=>{
         let m = new Date();
         return m.getMonth();
@@ -201,8 +202,9 @@ const CalendarModal = (props)=>
                 beginInterval:beginInterval,
                 finishInterval:finishInterval
             }
-
-            dispatch(setProfileLedgerPeriod(data));
+            
+            UpdateProfileSetting(db,'StartLedgerPeriod',beginInterval,dispatch)
+            UpdateProfileSetting(db,'FinishLedgerPeriod',finishInterval,dispatch)
             props.setPopupCalendar(false)
         }
     }

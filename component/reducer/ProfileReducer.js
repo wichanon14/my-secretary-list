@@ -7,12 +7,8 @@ const ProfileReducer=( state=profileSetting, action )=>
 {
     switch(action.type)
     {
-        case 'SET_LEDGER_PERIOD':
-            return {
-                ...state,
-                StartLedgerPeriod:action.payload.beginInterval,
-                FinishLedgerPeriod:action.payload.finishInterval
-            }
+        case 'SET_PROFILE_SETTING':
+            return action.payload;
         default: return state;
     }
 }

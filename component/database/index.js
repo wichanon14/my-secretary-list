@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import { RenderLedger } from '../central'
-import { setDailyTemplate, setWeeklyTemplate, setMonthlyTemplate } from '../action'
+import { setDailyTemplate, setWeeklyTemplate, setMonthlyTemplate, setProfileSetting } from '../action'
 import { useSelector } from 'react-redux';
 
 const db = {
@@ -21,7 +21,7 @@ export const DatabaseReducer = (state = db, action )=>
 }
 
 const success = (table_name)=>{}/*console.log(table_name,'success')*/;
-const error = (err)=>console.log('error >>>>');
+const error = (err='',msg)=>console.log('error >>>>',msg);
 
 const showIndex = (db,table_name) => 
 {
@@ -105,6 +105,7 @@ export const startDatabase = () =>
                 value FLOAT NOT NULL,
                 "limit" FLOAT NOT NULL,
                 includeCalculate INTEGER NOT NULL,
+                target_date INTEGER NOT NULL,
                 create_at INTEGER NOT NULL,
                 update_at INTEGER NOT NULL
             );`,
@@ -125,7 +126,27 @@ export const startDatabase = () =>
             [],success('Template structure'),error
         );
 
+        // Initial Profile Setting Structure
+        //tx.executeSql('DROP TABLE ProfileSetting;');
+        tx.executeSql(`
+            CREATE TABLE IF NOT EXISTS ProfileSetting(
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                key_value TEXT UNIQUE NOT NULL,
+                value TEXT NULL,
+                create_at INTEGER NOT NULL,
+                update_at INTEGER NOT NULL
+            );`,
+            [],success('Profile Setting structure'),error
+        );
+        tx.executeSql(`
+        INSERT INTO ProfileSetting ( key_value, create_at, update_at) 
+        VALUES 
+            ( 'StartLedgerPeriod', strftime('%s','now')*1000, strftime('%s','now')*1000),
+            ( 'FinishLedgerPeriod', strftime('%s','now')*1000, strftime('%s','now')*1000);
+        `,[],success('Complete insert profile setting'),error)
+
     },error,success)
+    GetAllProfileSetting(db);
     //showIndex(db,'Tasks');
     //showTable(db);
     //GetMasterTask(db)
@@ -284,9 +305,9 @@ export const AddLedgerRow = (db,parent,data,dispatch) =>
     db.transaction((tx)=>{
         tx.executeSql(
             `INSERT INTO Ledger
-            ( parent_id, title, "type", "level", value, "limit", includeCalculate, create_at, update_at)
-            VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate,
+            ( parent_id, title, "type", "level", value, "limit", includeCalculate, target_date, create_at, update_at)
+            VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, data.targetDate,
                 Date.parse(new Date()), Date.parse(new Date()) ],
                 ()=>{
                     GetAllLedger(db,dispatch);
@@ -298,16 +319,32 @@ export const AddLedgerRow = (db,parent,data,dispatch) =>
 export const GetAllLedger = (db,dispatch)=>
 {
     db.transaction((tx)=>{
+        
+        let whereCause = '';        
         tx.executeSql(
-            `SELECT * FROM Ledger`,[],
-            (_,{rows})=>{
-                // top ledger 
-                let result = JSON.parse(JSON.stringify(rows));
-                if( result && result._array.length > 0)
-                    RenderLedger(result._array,dispatch)
+            `SELECT * FROM ProfileSetting`,[],(_,{rows})=>{
+                let start = rows._array.filter((val,i)=>val.key_value==='StartLedgerPeriod')[0]
+                let finish = rows._array.filter((val,i)=>val.key_value==='FinishLedgerPeriod')[0]
+                if( start && finish && start.value && finish.value )
+                    whereCause = `WHERE ( target_date >= ${ start.value } AND target_date <= ${ finish.value } ) OR parent_id = null`;
+
+                tx.executeSql(
+                    `SELECT * FROM Ledger ${whereCause}`,[],
+                    (_,{rows})=>{
+                        // top ledger 
+
+                        console.log('top >> ',rows._array);
+                        let result = JSON.parse(JSON.stringify(rows));
+                        if( result && result._array.length > 0)
+                            RenderLedger(result._array,dispatch)
+        
+                    },error
+                )
 
             },error
         )
+
+        
     })
 }
 
@@ -362,7 +399,6 @@ export const GetTemplate = (db,type,dispatch,setShow)=>{
                 if( setShow )
                     setShow(false)
                     
-                console.log(rows._array)
                 if(rows && rows._array )
                 {
                     switch(type)
@@ -413,7 +449,6 @@ export const EditTemplate = (db,data,dispatch,setShow)=>
                 let sql = `SELECT id FROM Task_Master WHERE task_name = '${data.task_name}'`;
                 tx.executeSql(sql,[],(_,{rows})=>{
                     
-                    console.log('rows >>> ',rows._array)
                     if(rows._array && rows._array.length > 0)
                     {
                         let id = rows._array[0].id;
@@ -439,5 +474,38 @@ export const DeleteTemplate = (db,data,dispatch,setShow)=>
         tx.executeSql(sql,[],()=>{
             GetTemplate(db,data.template_type,dispatch,setShow);
         },error);
+    })
+}
+
+
+
+// ==================================== Profile Setting ===========================================
+export const GetAllProfileSetting = (db,dispatch) =>
+{
+    db.transaction((tx)=>
+    {
+        let sql = `SELECT * FROM ProfileSetting`;
+        tx.executeSql(sql,[],(_,{rows})=>{
+            let result = {}
+            if( rows && rows._array )
+            {
+                rows._array.forEach((val,i) => {
+                    result[val.key_value] = JSON.parse(val.value);
+                });
+            }
+
+            if(dispatch)
+                dispatch(setProfileSetting(result));
+
+        },error);
+    })
+}
+
+export const UpdateProfileSetting = (db,key,value,dispatch) =>
+{
+    db.transaction((tx)=>
+    {
+        let sql = `UPDATE ProfileSetting set value = '${value}' WHERE key_value = '${key}'`;
+        tx.executeSql(sql,[],()=>GetAllProfileSetting(db,dispatch),error)
     })
 }

@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
-import { startDatabase, GetAllDailyTaskByDate, GetAllLedger, GetTemplate } from './component/database';
+import { startDatabase, GetAllDailyTaskByDate, GetAllLedger, GetTemplate, GetAllProfileSetting } from './component/database';
 import { MenuProvider } from 'react-native-popup-menu';
 import rootReducers from './component/reducer';
 import Home from './component/screens/Home';
@@ -20,14 +20,14 @@ store.dispatch({
   payload : db
 })
 
+GetAllProfileSetting(db,store.dispatch)
 GetAllDailyTaskByDate(db,toyyyyMMDD(new Date),store.dispatch)
-GetAllLedger(db,store.dispatch)
 GetTemplate(db,'daily',store.dispatch)
-
+console.log('store >> ',store.getState()['ProfileSetting'])
 store.subscribe(()=>{
-  //console.debug('getState >> ',store.getState())
+  //console.debug('getState >> ',store.getState()['ProfileSetting'])
 })
-
+GetAllLedger(db,store.dispatch,store.getState()['ProfileSetting'])
 
 export default function App() {
 

@@ -1,8 +1,8 @@
 /* =============================== Profile Action =================================== */
-export const setProfileLedgerPeriod = (data)=>
+export const setProfileSetting = (data) =>
 {
     return {
-        type: "SET_LEDGER_PERIOD",
+        type: "SET_PROFILE_SETTING",
         payload: data
     }
 }
