@@ -50,7 +50,7 @@ const showTable = (db)=>
 
 export const startDatabase = () =>
 {
-    const dbname = "my-secretary-list.db"
+    const dbname = "my-secretary-list-2.db"
     const db = SQLite.openDatabase(dbname);
 
     // initial table
@@ -301,14 +301,13 @@ export const DeleteTask = (db,data,dispatch) =>
 // ==================================== Ledger ==================================================
 export const AddLedgerRow = (db,parent,data,dispatch) =>
 {
-
+    console.log(parent);
     db.transaction((tx)=>{
         tx.executeSql(
             `INSERT INTO Ledger
-            ( parent_id, title, "type", "level", value, "limit", includeCalculate, target_date, create_at, update_at)
-            VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
-            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, data.targetDate,
-                Date.parse(new Date()), Date.parse(new Date()) ],
+            ( parent_id, title, "type", "level", value, "limit", includeCalculate, target_date, create_at, update_at) 
+            VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );`,
+            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, data.targetDate, Date.parse(new Date()), Date.parse(new Date()) ],
                 ()=>{
                     GetAllLedger(db,dispatch);
                 },error
@@ -327,7 +326,6 @@ export const GetAllLedger = (db,dispatch)=>
                 let finish = rows._array.filter((val,i)=>val.key_value==='FinishLedgerPeriod')[0]
                 if( start && finish && start.value && finish.value )
                     whereCause = `WHERE ( target_date >= ${ start.value } AND target_date <= ${ finish.value } ) OR parent_id = null`;
-
                 tx.executeSql(
                     `SELECT * FROM Ledger ${whereCause}`,[],
                     (_,{rows})=>{

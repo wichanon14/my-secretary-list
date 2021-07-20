@@ -34,7 +34,7 @@ const LedgerTextAndPaidAmountAndLimit = (props) =>
                 }
                 style={{paddingLeft:'10%',minWidth:'100%',borderWidth:1,marginBottom:'5%',borderRadius:20}}/>
             <TextInput placeholder={'Number For Limit Paid'}
-                value={(LedgerState.temp.limit)?LedgerState.temp.limit.toString():''}
+                value={(LedgerState.temp.limit && LedgerState.temp.limit>0)?LedgerState.temp.limit.toString():''}
                 onChangeText={(e)=>{
                         if( ValidFloatNumber(e) !== false )
                         {

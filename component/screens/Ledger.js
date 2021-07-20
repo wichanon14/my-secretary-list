@@ -12,6 +12,7 @@ import LedgerRowType1 from '../elements/LedgerRowType1';
 import LedgerRowType2 from '../elements/LedgerRowType2';
 import LedgerRowType3 from '../elements/LedgerRowType3';
 import LedgerRowType4 from '../elements/LedgerRowType4';
+import LedgerRowType5 from '../elements/LedgerRowType5';
 import { sumValueFromChild } from '../central';
 import { AddLedgerRow } from '../database';
 
@@ -173,9 +174,15 @@ const Ledger = (props) =>
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 4:
-                    // Text, Offer and limit sum
+                    // Date and Sum
                     return [
                         <LedgerRowType4 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
+                        val.child.map((v,i)=>renderRows(val,v,i))
+                    ]
+                case 5:
+                    // Text, Offer and limit sum
+                    return [
+                        <LedgerRowType5 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 default:

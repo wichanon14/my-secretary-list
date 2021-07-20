@@ -7,6 +7,7 @@ import LedgerTextOnlyInput from './LedgerTextOnlyInput';
 import LedgerTextAndAmountInput from './LedgerTextAndAmountInput';
 import LedgerTextAndSumResultInput from './LedgerTextAndSumResultInput';
 import LedgerTextAndPaidAmountAndLimit from './LedgerTextAndPaidAmountAndLimit';
+import LedgerDateAndSumResultInput from './LedgerDateAndSumResultInput';
 import { AddLedgerRow, DeleteLedgerRow, UpdateLedgerRow } from '../database';
 
 const DummyLedgerList = (props) =>
@@ -27,6 +28,8 @@ const DummyLedgerList = (props) =>
             case 3:
                 return (<LedgerTextAndSumResultInput />)
             case 4:
+                return (<LedgerDateAndSumResultInput />)
+            case 5:
                 return (<LedgerTextAndPaidAmountAndLimit />)
             default:
                 return (

@@ -38,17 +38,21 @@ const DisplayTypeLedgerModal = (props) =>
                     </View>
                     <View style={{minHeight:'45%',justifyContent:'center',alignItems:'center'}}>
                         <TouchableOpacity onPress={()=>updateLedgerType(1)}>
-                            <LedgerType text={'example'} selected={defaultType===1} />
+                            <LedgerType text={'title'} selected={defaultType===1} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>updateLedgerType(2)}>
-                            <LedgerType text={'example -100 =>Amout'} selected={defaultType===2} />
+                            <LedgerType text={'title -100 =>Amout'} selected={defaultType===2} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>updateLedgerType(3)}>
-                            <LedgerType text={'example (+100) =>Sum'} selected={defaultType===3} />
+                            <LedgerType text={'title (+100) =>Sum'} selected={defaultType===3} />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={()=>updateLedgerType(4)} >
-                            <LedgerType text={'example 100/150 (+50)'} selected={defaultType===4} />
+                            <LedgerType text={'date (+100) =>Sum'} selected={defaultType===4} />
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={()=>updateLedgerType(5)} >
+                            <LedgerType text={'title 100/150 (+50)'} selected={defaultType===5} />
+                        </TouchableOpacity>
+
                     </View>
                 </View>
                 <TouchableOpacity style={{minHeight:'15%',width:'100%'}} onPress={()=>props.setTypeModal(false)}></TouchableOpacity>
