@@ -161,7 +161,7 @@ export const AddMasterTask = (db,taskName,then) =>
         tx.executeSql(
             `INSERT INTO Task_Master(task_name,create_at,update_at) 
             VALUES(?,?,?);`,
-            [taskName,Date.parse(new Date()),Date.parse(new Date())],
+            [taskName,Date.parse(new Date())+(7*3600*1000),Date.parse(new Date())+(7*3600*1000)],
             then,then
         )
     },error,success)
@@ -190,7 +190,7 @@ export const AddTask = (db,data,dispatch) =>
             db.transaction((tx)=>{
                 
                 let sql =`INSERT INTO Tasks(date,task,create_at,update_at) 
-                SELECT '${data.date}',id,${Date.parse(new Date())},${Date.parse(new Date())} 
+                SELECT '${data.date}',id,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
                 FROM Task_Master 
                 where task_name = '${data.task_name}' AND NOT EXISTS (
                     SELECT 1 FROM Tasks WHERE task = Task_Master.id AND date = '${data.date}' 
@@ -252,7 +252,7 @@ export const UpdateTask = (db,data,dispatch) =>
                             if(JSON.parse(JSON.stringify(rows))._array.length>0)
                                 task = JSON.parse(JSON.stringify(rows))._array[0].id;
                             
-                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())} WHERE id = ${data.id}`;
+                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())+(7*3600*1000)} WHERE id = ${data.id}`;
                             tx.executeSql(sql,[],success,error);
                             GetAllDailyTaskByDate(db,data.date,dispatch);
 
@@ -269,7 +269,7 @@ export const UpdateTask = (db,data,dispatch) =>
                             if(JSON.parse(JSON.stringify(rows))._array.length>0)
                                 task = JSON.parse(JSON.stringify(rows))._array[0].id;
                             
-                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())} WHERE id = ${data.id}`;
+                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())+(7*3600*1000)} WHERE id = ${data.id}`;
                             tx.executeSql(sql,[],success,error);
                             GetAllDailyTaskByDate(db,data.date,dispatch);
 
@@ -301,13 +301,12 @@ export const DeleteTask = (db,data,dispatch) =>
 // ==================================== Ledger ==================================================
 export const AddLedgerRow = (db,parent,data,dispatch) =>
 {
-    console.log(parent);
     db.transaction((tx)=>{
         tx.executeSql(
             `INSERT INTO Ledger
             ( parent_id, title, "type", "level", value, "limit", includeCalculate, target_date, create_at, update_at) 
             VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );`,
-            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, data.targetDate, Date.parse(new Date()), Date.parse(new Date()) ],
+            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, data.targetDate, Date.parse(new Date())+(7*3600*1000), Date.parse(new Date())+(7*3600*1000) ],
                 ()=>{
                     GetAllLedger(db,dispatch);
                 },error
@@ -325,13 +324,14 @@ export const GetAllLedger = (db,dispatch)=>
                 let start = rows._array.filter((val,i)=>val.key_value==='StartLedgerPeriod')[0]
                 let finish = rows._array.filter((val,i)=>val.key_value==='FinishLedgerPeriod')[0]
                 if( start && finish && start.value && finish.value )
-                    whereCause = `WHERE ( target_date >= ${ start.value } AND target_date <= ${ finish.value } ) OR parent_id = null`;
+                    whereCause = `WHERE ( target_date >= ${ start.value } AND target_date <= ${ finish.value } ) OR parent_id is null`;
+                //whereCause='';
+                let sql = `SELECT * FROM Ledger ${whereCause}`;
                 tx.executeSql(
-                    `SELECT * FROM Ledger ${whereCause}`,[],
+                    sql,[],
                     (_,{rows})=>{
                         // top ledger 
 
-                        console.log('top >> ',rows._array);
                         let result = JSON.parse(JSON.stringify(rows));
                         if( result && result._array.length > 0)
                             RenderLedger(result._array,dispatch)
@@ -354,7 +354,7 @@ export const UpdateLedgerRow = (db,parent,data,dispatch) =>
             SET parent_id=?, title=?, "type"=?, "level"=?, value=?, "limit"=?, includeCalculate=?, 
             update_at=? WHERE id=?;
             `,[ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, 
-                Date.parse(new Date()) ,data.id ],
+                Date.parse(new Date())+(7*3600*1000) ,data.id ],
                 ()=>{
                     GetAllLedger(db,dispatch);
                 },error
@@ -421,7 +421,7 @@ export const AddTemplate = (db,data,dispatch,setShow)=>{
 
             db.transaction((tx)=>{
                 let sql = `INSERT INTO Template(task,template_type,period,create_at,update_at) 
-                SELECT id,'${data.type}','${data.period}',${Date.parse(new Date())},${Date.parse(new Date())}
+                SELECT id,'${data.type}','${data.period}',${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)}
                 FROM Task_Master 
                 where task_name = '${data.task_name}' AND NOT EXISTS (
                     SELECT 1 FROM Template WHERE task = Task_Master.id AND template_type = '${data.type}' 
@@ -451,7 +451,7 @@ export const EditTemplate = (db,data,dispatch,setShow)=>
                     {
                         let id = rows._array[0].id;
                         db.transaction((tx)=>{
-                            let sql = `UPDATE Template SET task=${id}, period = '${data.period}', update_at=${Date.parse(new Date())} WHERE id = ${data.id}`;
+                            let sql = `UPDATE Template SET task=${id}, period = '${data.period}', update_at=${Date.parse(new Date())+(7*3600*1000)} WHERE id = ${data.id}`;
                             tx.executeSql(sql,[],()=>{
                                 GetTemplate(db,data.template_type,dispatch,setShow);
                             })
@@ -493,7 +493,10 @@ export const GetAllProfileSetting = (db,dispatch) =>
             }
 
             if(dispatch)
+            {
                 dispatch(setProfileSetting(result));
+                GetAllLedger(db,dispatch);
+            }
 
         },error);
     })

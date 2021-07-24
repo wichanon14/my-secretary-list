@@ -14,12 +14,11 @@ const LedgerRowType4 = (props)=>
             marginLeft:(10*props.data.level)+'%',minWidth:'50%',marginBottom:'3%'}}>
             <TouchableOpacity onLongPress={()=>props.edit(props.data)}>
                 <Text style={{fontSize:20,fontWeight:(props.data.level<2)?'bold':'normal'}}>
-                    {props.data.title} {props.data.value}/{props.data.limit} ( { }
-                    <Text style={{color:(props.data.limit-props.data.value>0)?'green':(props.data.limit-props.data.value)===0?'black':'red'}}> 
-                        {(props.data.limit-props.data.value>0)?'+'+(props.data.limit-props.data.value):props.data.limit-props.data.value}
+                    {props.data.title} ( { }
+                    <Text style={{color:(sumValueFromChild(props.data)>0)?'green':(sumValueFromChild(props.data)===0)?'black':'red'}}> 
+                        {(sumValueFromChild(props.data)>0)?'+'+sumValueFromChild(props.data):sumValueFromChild(props.data)}
                     </Text>
-                    { } 
-                    )
+                    { } )
                 </Text>
             </TouchableOpacity>
             {

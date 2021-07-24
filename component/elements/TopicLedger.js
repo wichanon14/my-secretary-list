@@ -16,6 +16,7 @@ const TopicLedger = (props)=>
                 (!props.isLock) && 
                 <TouchableOpacity style={{marginTop:'1.5%',marginLeft:'2%'}} 
                     onPress={()=>{
+                        props.setTypeModal(true)
                         let data = props.AddNewForm(props.component);
                         props.setComponent(data);
                     }}>

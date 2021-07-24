@@ -14,7 +14,8 @@ import LedgerRowType3 from '../elements/LedgerRowType3';
 import LedgerRowType4 from '../elements/LedgerRowType4';
 import LedgerRowType5 from '../elements/LedgerRowType5';
 import { sumValueFromChild } from '../central';
-import { AddLedgerRow } from '../database';
+import { AddLedgerRow, UpdateLedgerRow } from '../database';
+import DisplayTypeLedgerModal from '../elements/DisplayTypeLedgerModal';
 
 const Ledger = (props) =>
 {
@@ -32,12 +33,15 @@ const Ledger = (props) =>
     // Modal flag
     const [ firstTopicModal, createFirstTopicModal ] = useState(false)
     const [ lockCreateRecord,setLockCreateRecord ] = useState(false);
+    const [ popupCalendar, setPopupCalendar] = useState(false);
     const [ typeModal, setTypeModal ] = useState(false);
 
     useEffect(()=>{
-        setComponent(ledgerState.component);
+        setComponent({...ledgerState.component});
         Recalculate(component)
     },[ledgerState.component])
+
+    
 
     const Recalculate = (parent)=>
     {
@@ -55,18 +59,28 @@ const Ledger = (props) =>
 
     const createFirstTopic = () =>
     {
-        let data = {
-            id:0,
-            title:componentName,
-            type:1,
-            level:0,
-            value:0,
-            limit:-1,
-            child:[],
-            includeCalculate:0,
-            targetDate:Date.parse(new Date())
+        if( component.id > 0 )
+        {
+            let existcomp = component;
+            existcomp.title = componentName;
+            UpdateLedgerRow(db,null,existcomp,dispatch);
         }
-        AddLedgerRow(db,null,data,dispatch)
+        else
+        {
+            let data = {
+                id:0,
+                title:componentName,
+                type:1,
+                level:0,
+                value:0,
+                limit:-1,
+                child:[],
+                includeCalculate:0,
+                targetDate:Date.parse(new Date())+(7*3600*1000)
+            }
+            AddLedgerRow(db,null,data,dispatch)
+        }
+        
         
     }
 
@@ -83,7 +97,7 @@ const Ledger = (props) =>
                 limit:-1,
                 child:[],
                 includeCalculate:false,
-                targetDate:Date.parse(new Date()),
+                targetDate:Date.parse(new Date())+(7*3600*1000),
                 temp:true
             }
 
@@ -144,8 +158,9 @@ const Ledger = (props) =>
         if(val.temp)
         {
             return (
-                <DummyLedgerList component={component} key={val.title+'_'+i} setTypeModal={setTypeModal} 
-                    typeModal={typeModal} setLockRecord={setLockCreateRecord} RemoveTempRecord={RemoveTempRecord}
+                <DummyLedgerList component={component} key={val.title+'_'+i} setLockRecord={setLockCreateRecord} RemoveTempRecord={RemoveTempRecord}
+                    popupCalendar={popupCalendar} setPopupCalendar={setPopupCalendar}
+                    typeModal={typeModal} setTypeModal={setTypeModal}
                     parentList={parent} isLock={lockCreateRecord}
                     />
             )
@@ -158,31 +173,31 @@ const Ledger = (props) =>
                 case 1:
                     // Text
                     return [
-                        <LedgerRowType1 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
+                        <LedgerRowType1 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable} setTypeModal={setTypeModal}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 2:
                     // Text and Amount
                     return [
-                        <LedgerRowType2 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
+                        <LedgerRowType2 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable} setTypeModal={setTypeModal}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 3:
                     // Text and Sum
                     return [
-                        <LedgerRowType3 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
+                        <LedgerRowType3 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable} setTypeModal={setTypeModal}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 4:
                     // Date and Sum
                     return [
-                        <LedgerRowType4 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
+                        <LedgerRowType4 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable} setTypeModal={setTypeModal}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 case 5:
                     // Text, Offer and limit sum
                     return [
-                        <LedgerRowType5 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable}/>,
+                        <LedgerRowType5 key={val.title+'_'+i} data={val} isLock={lockCreateRecord} AddNewData={AddNewData} edit={editable} setTypeModal={setTypeModal}/>,
                         val.child.map((v,i)=>renderRows(val,v,i))
                     ]
                 default:
@@ -211,13 +226,17 @@ const Ledger = (props) =>
                         AddNewForm={AddNewData}
                         setComponent={setComponent}
                         isLock={lockCreateRecord}
+                        setTypeModal={setTypeModal}
                     />
 
                     {/* Layer Data */}
                     {
                         component.child.map((val,i)=>renderRows(component,val,i))
                     }
-                    <CreateSingleTextModal display={firstTopicModal} createText={createFirstTopic} setDisplay={createFirstTopicModal} text={componentName} setText={setComponentName} />
+                    <CreateSingleTextModal display={firstTopicModal} createText={createFirstTopic} 
+                        setDisplay={createFirstTopicModal} 
+                        text={(componentName)?componentName:ledgerState.component.title} setText={setComponentName} />
+                    <DisplayTypeLedgerModal otherState={setPopupCalendar} typeModal={typeModal} setTypeModal={setTypeModal} />
                 </View>
             )
     }

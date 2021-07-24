@@ -1,14 +1,14 @@
-import React from 'react';
-import { View, TouchableOpacity, Alert } from 'react-native';
-import DisplayTypeLedgerModal from './DisplayTypeLedgerModal';
+import React, { useEffect, useState } from 'react';
+import { View, TouchableOpacity, Alert, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
 import LedgerTextOnlyInput from './LedgerTextOnlyInput';
 import LedgerTextAndAmountInput from './LedgerTextAndAmountInput';
 import LedgerTextAndSumResultInput from './LedgerTextAndSumResultInput';
 import LedgerTextAndPaidAmountAndLimit from './LedgerTextAndPaidAmountAndLimit';
-import LedgerDateAndSumResultInput from './LedgerDateAndSumResultInput';
+import CalendarSelectedModal from './CalendarSelectedModal';
 import { AddLedgerRow, DeleteLedgerRow, UpdateLedgerRow } from '../database';
+import { toyyyyMMDD } from '../central'
 
 const DummyLedgerList = (props) =>
 {
@@ -16,6 +16,28 @@ const DummyLedgerList = (props) =>
     const LedgerState = useSelector(state=>state.Ledger)
     const dispatch = useDispatch()
     const db = useSelector(state=>state.database.connection);
+    const [ dateSelected, setDateSelected ] = useState( null )
+
+    useEffect(()=>{
+        if(dateSelected)
+        {
+            let data = LedgerState.temp;
+            data.targetDate=dateSelected;
+            let date = new Date(dateSelected);
+            let month = (date.getMonth()<9)?'0'+(date.getMonth()+1):(date.getMonth()+1);
+            let day = (date.getDate()<10)?'0'+date.getDate():date.getDate();
+            data.title=`${day}/${month}`;
+            dispatch({
+                type:'SET_TEMP_LEDGER',
+                payload:data
+            }
+            );
+
+            SaveLedgerListInput();
+
+        }
+
+    },[dateSelected])
 
     const RenderInputSection = (type)=>
     {
@@ -28,7 +50,13 @@ const DummyLedgerList = (props) =>
             case 3:
                 return (<LedgerTextAndSumResultInput />)
             case 4:
-                return (<LedgerDateAndSumResultInput />)
+                return [
+                    <View style={{borderWidth:1,padding:'3%',minWidth:'50%',maxWidth:'70%',marginRight:'2%',borderRadius:20}}>
+                        <Text style={{color:'rgba(0,0,0,0.5)'}}>{LedgerState.temp.title}</Text>
+                    </View>,
+                    <CalendarSelectedModal popupCalendar={props.popupCalendar} setPopupCalendar={props.setPopupCalendar} 
+                            setDateSelected={setDateSelected}/>
+                ]
             case 5:
                 return (<LedgerTextAndPaidAmountAndLimit />)
             default:
@@ -45,13 +73,23 @@ const DummyLedgerList = (props) =>
             [
                 {
                     text:"Yes",
-                    onPress:()=>DeleteLedgerRow(db,data,dispatch)
+                    onPress:()=>{
+                        DeleteLedgerRow(db,data,dispatch)
+                    }
                 },
                 {
-                    text:"No"
+                    text:"No",
+                    onPress:()=>{
+                        props.parentList.child.forEach(element => {
+                            if(element.temp)
+                                delete element.temp;
+                        });
+                        props.RemoveTempRecord(props.component)
+                        dispatch({ type:'SET_TEMP_LEDGER',payload:{} })
+                    }
                 }
             ]
-        )
+        )        
         
     }
 
@@ -106,7 +144,6 @@ const DummyLedgerList = (props) =>
             <TouchableOpacity onPress={()=>CancelLedgerListInput()}>
                 <Icon name={'times'} size={30} solid color="red" ></Icon>
             </TouchableOpacity>
-            <DisplayTypeLedgerModal typeModal={props.typeModal} setTypeModal={props.setTypeModal} />
         </View>
     )
 }

@@ -40,7 +40,6 @@ const TemplateDailyArea = (props)=>
 
     const renderCreateButton = ()=>
     {
-        console.log('edit >>> ',props.edit,props.data)
         if(!props.edit)
             return (
                 <TouchableOpacity style={style.createTaskButton} onPress={()=>createDailyTemplate()}>

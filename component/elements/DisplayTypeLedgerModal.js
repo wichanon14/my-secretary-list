@@ -18,10 +18,18 @@ const DisplayTypeLedgerModal = (props) =>
 
     const updateLedgerType = (type)=>
     {
-        dispatch({
-            type:'SET_TEMP_LEDGER',
-            payload:{...LedgerState.temp,type:type}
-        })
+        if(LedgerState.temp)
+        {
+            dispatch({
+                type:'SET_TEMP_LEDGER',
+                payload:{...LedgerState.temp,type:type}
+            })
+        }
+
+        if(type === 4)
+        {
+            props.otherState(true)
+        }
 
         props.setTypeModal(false)
     }

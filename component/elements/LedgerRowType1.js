@@ -20,8 +20,10 @@ const LedgerRowType1 = (props)=>
                 (!props.isLock) && 
                 <TouchableOpacity style={{marginLeft:'2%'}} 
                     onPress={()=>{
+                        props.setTypeModal(true);
                         props.AddNewData(props.data);
                         dispatch({ type:'SET_LEDGER_COMPONENT',payload:{...LedgerState.component} })
+                        
                     }}>
                     <Icon name={'plus-square'} regular size={20} color="black" ></Icon>
                 </TouchableOpacity>
