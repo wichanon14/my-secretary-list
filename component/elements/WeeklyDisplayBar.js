@@ -3,10 +3,13 @@ import { View,StyleSheet,Text, TouchableOpacity } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { getDayAbbr } from '../label'
 import { setDateSelected } from '../action'
+import { GetAllDailyTaskByDate } from '../database'
+import { toyyyyMMDD } from '../central'
 
 const WeeklyDisplayBar = ()=>{
 
     const dateOpt = useSelector(state=>state.DateOpt);
+    const db = useSelector(state=>state.database.connection);
     const dispatch = useDispatch()
     const [dayOfWeek,setDayOfWeek] = useState([])
     const [currentDate,setCurrentDate] = useState(dateOpt.DateSelected)
@@ -19,6 +22,7 @@ const WeeklyDisplayBar = ()=>{
     const pickDate = (date)=>{
         setCurrentDate(date);
         dispatch(setDateSelected(date))
+        GetAllDailyTaskByDate(db,toyyyyMMDD(date),dispatch)
     }
 
     const generateDayOfWeek = () =>{
@@ -42,7 +46,7 @@ const WeeklyDisplayBar = ()=>{
             let day = new Date( dateSelected+(i*86400000) )
             newDayOfWeek.push(day);
         }
-
+        
         setDayOfWeek([...newDayOfWeek]);
 
     }

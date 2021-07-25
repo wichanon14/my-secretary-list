@@ -1,7 +1,6 @@
 import * as SQLite from 'expo-sqlite';
-import { RenderLedger } from '../central'
+import { RenderLedger, getDateFromWeeklyPeriod, toyyyyMMDD, getDateFromMonthlyPeriod  } from '../central'
 import { setDailyTemplate, setWeeklyTemplate, setMonthlyTemplate, setProfileSetting } from '../action'
-import { useSelector } from 'react-redux';
 
 const db = {
     connection:{}
@@ -21,7 +20,7 @@ export const DatabaseReducer = (state = db, action )=>
 }
 
 const success = (table_name)=>{}/*console.log(table_name,'success')*/;
-const error = (err='',msg)=>console.log('error >>>>',msg);
+const error = (err='',msg)=>console.log('error >>>>',err,msg);
 
 const showIndex = (db,table_name) => 
 {
@@ -50,7 +49,7 @@ const showTable = (db)=>
 
 export const startDatabase = () =>
 {
-    const dbname = "my-secretary-list-2.db"
+    const dbname = "my-secretary-list.db"
     const db = SQLite.openDatabase(dbname);
 
     // initial table
@@ -76,7 +75,8 @@ export const startDatabase = () =>
                 task INTEGER NOT NULL,
                 complete INTEGER DEFAULT 0,
                 create_at INTEGER NOT NULL,
-                update_at INTEGER NOT NULL
+                update_at INTEGER NOT NULL,
+                UNIQUE(date,task)
             );`,
             [],success('Tasks'),error
         );
@@ -139,14 +139,14 @@ export const startDatabase = () =>
             [],success('Profile Setting structure'),error
         );
         tx.executeSql(`
-        INSERT INTO ProfileSetting ( key_value, create_at, update_at) 
+        INSERT OR REPLACE INTO ProfileSetting ( key_value, create_at, update_at) 
         VALUES 
             ( 'StartLedgerPeriod', strftime('%s','now')*1000, strftime('%s','now')*1000),
             ( 'FinishLedgerPeriod', strftime('%s','now')*1000, strftime('%s','now')*1000);
         `,[],success('Complete insert profile setting'),error)
 
     },error,success)
-    GetAllProfileSetting(db);
+    //GetAllProfileSetting(db);
     //showIndex(db,'Tasks');
     //showTable(db);
     //GetMasterTask(db)
@@ -214,14 +214,18 @@ export const GetAllDailyTaskByDate = (db,date,dispatch) =>
     db.transaction((tx)=>{
 
         // Fetch selected tasks
-        tx.executeSql(`
+        let sql = `
             SELECT Tasks.id as id,date,task_name,complete,Tasks.create_at,Tasks.update_at 
             FROM Tasks 
             INNER JOIN Task_Master ON Tasks.task = Task_Master.id
-            WHERE date = ? 
+            WHERE date = '${date}'
             ORDER BY complete
-        `, [date], 
+        `;
+        tx.executeSql(sql, [], 
             (_, { rows }) =>{
+                
+                //console.log('rows >>> ',rows._array);
+
                 dispatch({
                     type : "SET_TASK_LIST",
                     payload : JSON.parse(JSON.stringify(rows))._array
@@ -476,6 +480,101 @@ export const DeleteTemplate = (db,data,dispatch,setShow)=>
 }
 
 
+export const GenerateTemplate = (db,dateSelected,dispatch) =>
+{
+    db.transaction((tx)=>{
+
+        let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+                SELECT '${toyyyyMMDD(dateSelected)}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                FROM Template 
+                where template_type = 'daily'`;
+        tx.executeSql(sql,[],()=>{
+            GetAllDailyTaskByDate(db,toyyyyMMDD(dateSelected),dispatch);
+        },error)
+
+        sql = `SELECT * FROM Template WHERE template_type IN ('weekly','monthly')`;
+        tx.executeSql(sql,[],(_,{rows})=>{
+            let data = rows._array;
+            if(data && data.length>0)
+            {
+                WeeklyTemplateGenerate(db,dateSelected,data,dispatch);
+            }
+        },error)
+
+    })
+}
+
+const WeeklyTemplateGenerate = (db,dateSelected,data,dispatch) =>
+{
+    db.transaction((tx)=>{
+
+        if( data && data.length > 0 )
+        {
+            let weekObj = data.filter(val=>val.template_type==='weekly')
+            weekObj.forEach((val,i)=>{
+
+                let result = getDateFromWeeklyPeriod(dateSelected,val);
+                let sqlList = [];
+
+                if( result && result.length > 0 )
+                {
+                    result.forEach(dateResult=>{
+                        let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+                        SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                        FROM Template 
+                        where Template.id = ${val.id}`;
+                        sqlList.push(sql);
+                    })
+                    chainSql(db,sqlList,0);
+                }
+                
+            })
+
+            MonthlyTemplateGenerate(db,dateSelected,data,dispatch);
+        }
+    })
+}
+
+const MonthlyTemplateGenerate = (db,dateSelected,data,dispatch) =>
+{
+    if( data && data.length > 0 )
+    {
+        let monthlyObj = data.filter(val=>val.template_type==='monthly')
+        monthlyObj.forEach((val,i)=>{
+
+            let result = getDateFromMonthlyPeriod(dateSelected,val);
+            let sqlList = [];
+            console.log(`${i} >> `,result );
+
+            if( result && result.length > 0 )
+            {
+                result.forEach(dateResult=>{
+                    let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+                    SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                    FROM Template 
+                    where Template.id = ${val.id}`;
+                    console.log(sql);
+                    sqlList.push(sql);
+                })
+                chainSql(db,sqlList,0,`Generate Template Monthly`);
+                GetAllDailyTaskByDate(db,toyyyyMMDD(dateSelected),dispatch);
+            }
+            
+        })
+    }
+}
+
+const chainSql = (db,sqlList,i,errorMsg='')=>
+{
+    if(i<sqlList.length)
+    {
+        db.transaction((tx)=>{
+            tx.executeSql(sqlList[i],[],()=>{
+                chainSql(db,sqlList,i+1)
+            },console.log(errorMsg))
+        })
+    }
+}
 
 // ==================================== Profile Setting ===========================================
 export const GetAllProfileSetting = (db,dispatch) =>

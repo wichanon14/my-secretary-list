@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Space from './Space'
 import TaskCreatedModal from './TaskCreatedModal'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import TemplateCreateModal from './TemplateCreateModal';
+import { GenerateTemplate } from '../database';
 
 const MenuBar = ()=>
 {
@@ -15,6 +16,8 @@ const MenuBar = ()=>
     const dateSelected = useSelector(state=>state.DateOpt);
     const navigation = useNavigation();
     const route = useRoute();
+    const db = useSelector(state=>state.database.connection)
+    const dispatch = useDispatch();
 
     const backgroundColor = (name) =>{
 
@@ -52,7 +55,8 @@ const MenuBar = ()=>
                 style={[style.MenuArea,{backgroundColor:backgroundColor('bullseye')}]} />
             
             <Space size={0.3} />
-            <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea} onPress={()=>setShowTaskCreatedModal(true)}/>
+            <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea} onPress={()=>setShowTaskCreatedModal(true)}
+                onLongPress={()=>GenerateTemplate(db,dateSelected.DateSelected,dispatch)}/>
             
             <Space size={0.5} />
             <Icon name={'calendar-alt'} size={40} color="white" 
