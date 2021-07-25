@@ -21,8 +21,8 @@ const WeeklyDisplayBar = ()=>{
 
     const pickDate = (date)=>{
         setCurrentDate(date);
-        dispatch(setDateSelected(date))
-        GetAllDailyTaskByDate(db,toyyyyMMDD(date),dispatch)
+        dispatch( setDateSelected(date) )
+        GetAllDailyTaskByDate( db, toyyyyMMDD(date), dispatch )
     }
 
     const generateDayOfWeek = () =>{
@@ -55,7 +55,7 @@ const WeeklyDisplayBar = ()=>{
         <View style={[style.AreaAndAlign,{flexDirection:'row',backgroundColor:'black'}]}>
             {
                 dayOfWeek.map((val,i)=>(
-                    <TouchableOpacity key={'day_'+i} style={[style.DatePickArea,
+                    <TouchableOpacity key={'day_'+i}  style={[style.DatePickArea,
                         (i===3)?{backgroundColor:'black',borderWidth:1,borderColor:'white'}:{backgroundColor:'white'}]}
                         onPress={()=>pickDate(val)} >
                         <Text style={

@@ -149,7 +149,7 @@ export const startDatabase = () =>
     //GetAllProfileSetting(db);
     //showIndex(db,'Tasks');
     //showTable(db);
-    //GetMasterTask(db)
+    GetMasterTask(db)
     return db;
 }
 
@@ -173,10 +173,11 @@ export const GetMasterTask = (db) =>
 
         // Fetch selected tasks
         tx.executeSql(`
-            SELECT * FROM Task_Master;
+            SELECT Tasks.*,Task_Master.task_name FROM Tasks 
+            INNER JOIN Task_Master ON Tasks.task = Task_Master.id;
         `, [], 
             (_, { rows }) =>{
-                /*console.log('data >>> ',JSON.parse(JSON.stringify(rows))._array)*/
+                //console.log('data >>> ',JSON.parse(JSON.stringify(rows))._array)
             }
         );
     },error,success)
@@ -213,6 +214,8 @@ export const GetAllDailyTaskByDate = (db,date,dispatch) =>
 {
     db.transaction((tx)=>{
 
+
+
         // Fetch selected tasks
         let sql = `
             SELECT Tasks.id as id,date,task_name,complete,Tasks.create_at,Tasks.update_at 
@@ -221,6 +224,7 @@ export const GetAllDailyTaskByDate = (db,date,dispatch) =>
             WHERE date = '${date}'
             ORDER BY complete
         `;
+        //console.log('sql >>> ',sql);
         tx.executeSql(sql, [], 
             (_, { rows }) =>{
                 
@@ -480,88 +484,94 @@ export const DeleteTemplate = (db,data,dispatch,setShow)=>
 }
 
 
-export const GenerateTemplate = (db,dateSelected,dispatch) =>
+export const GenerateDailyTemplate = (db,dateSelected,dispatch) =>
 {
     db.transaction((tx)=>{
 
         let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
-                SELECT '${toyyyyMMDD(dateSelected)}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                SELECT '${toyyyyMMDD(dateSelected,true)}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
                 FROM Template 
                 where template_type = 'daily'`;
         tx.executeSql(sql,[],()=>{
-            GetAllDailyTaskByDate(db,toyyyyMMDD(dateSelected),dispatch);
+            GetAllDailyTaskByDate(db,toyyyyMMDD(dateSelected,true),dispatch);
         },error)
 
-        sql = `SELECT * FROM Template WHERE template_type IN ('weekly','monthly')`;
+    })
+}
+
+export const WeeklyTemplateGenerate = (db,dateSelected,dispatch) =>
+{
+    let sql = `SELECT * FROM Template WHERE template_type ='weekly'`;
+    db.transaction((tx)=>{
         tx.executeSql(sql,[],(_,{rows})=>{
             let data = rows._array;
             if(data && data.length>0)
             {
-                WeeklyTemplateGenerate(db,dateSelected,data,dispatch);
+                if( data && data.length > 0 )
+                {
+                    data.forEach((val,i)=>{
+    
+                        let result = getDateFromWeeklyPeriod(dateSelected,val);
+                        let sqlList = [];
+                        if( result && result.length > 0 )
+                        {
+                            result.forEach(dateResult=>{
+                                let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+                                SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                                FROM Template 
+                                where Template.id = ${val.id}`;
+                                sqlList.push(sql);
+                            })
+                            chainSql(db,sqlList,0);
+                        }
+                        
+                    })
+                    GetAllDailyTaskByDate(db,toyyyyMMDD(dateSelected,true),dispatch);
+
+                }
+            }
+        },error)
+    })
+
+}
+
+export const MonthlyTemplateGenerate = (db,dateSelected,dispatch) =>
+{
+    let sql = `SELECT * FROM Template WHERE template_type ='monthly'`;
+    //console.log('date >> ',dateSelected)
+    db.transaction((tx)=>{
+
+        tx.executeSql(sql,[],(_,{rows})=>{
+            let data = rows._array;
+
+            if( data && data.length > 0 )
+            {
+                
+                for(let i=0;i<data.length;i++)
+                {
+
+                    let result = getDateFromMonthlyPeriod(dateSelected,data[i]);
+                    let sqlList = [];
+
+                    if( result && result.length > 0 )
+                    {
+                        result.forEach(dateResult=>{
+                            let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+                            SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                            FROM Template 
+                            where Template.id = ${data[i].id}`;
+                            sqlList.push(sql);
+                        })
+                        chainSql(db,sqlList,0,`Generate Template Monthly`);
+                    }
+                }
+                GetAllDailyTaskByDate(db,toyyyyMMDD(dateSelected,true),dispatch);
             }
         },error)
 
     })
-}
 
-const WeeklyTemplateGenerate = (db,dateSelected,data,dispatch) =>
-{
-    db.transaction((tx)=>{
-
-        if( data && data.length > 0 )
-        {
-            let weekObj = data.filter(val=>val.template_type==='weekly')
-            weekObj.forEach((val,i)=>{
-
-                let result = getDateFromWeeklyPeriod(dateSelected,val);
-                let sqlList = [];
-
-                if( result && result.length > 0 )
-                {
-                    result.forEach(dateResult=>{
-                        let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
-                        SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
-                        FROM Template 
-                        where Template.id = ${val.id}`;
-                        sqlList.push(sql);
-                    })
-                    chainSql(db,sqlList,0);
-                }
-                
-            })
-
-            MonthlyTemplateGenerate(db,dateSelected,data,dispatch);
-        }
-    })
-}
-
-const MonthlyTemplateGenerate = (db,dateSelected,data,dispatch) =>
-{
-    if( data && data.length > 0 )
-    {
-        let monthlyObj = data.filter(val=>val.template_type==='monthly')
-        monthlyObj.forEach((val,i)=>{
-
-            let result = getDateFromMonthlyPeriod(dateSelected,val);
-            let sqlList = [];
-            console.log(`${i} >> `,result );
-
-            if( result && result.length > 0 )
-            {
-                result.forEach(dateResult=>{
-                    let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
-                    SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
-                    FROM Template 
-                    where Template.id = ${val.id}`;
-                    console.log(sql);
-                    sqlList.push(sql);
-                })
-                chainSql(db,sqlList,0,`Generate Template Monthly`);
-                GetAllDailyTaskByDate(db,toyyyyMMDD(dateSelected),dispatch);
-            }
-            
-        })
-    }
+    
 }
 
 const chainSql = (db,sqlList,i,errorMsg='')=>
@@ -571,7 +581,8 @@ const chainSql = (db,sqlList,i,errorMsg='')=>
         db.transaction((tx)=>{
             tx.executeSql(sqlList[i],[],()=>{
                 chainSql(db,sqlList,i+1)
-            },console.log(errorMsg))
+                console.log('we made it')
+            },(transact,err) => console.log('We have encounter an Error', transact,err))
         })
     }
 }

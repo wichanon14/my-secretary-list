@@ -21,7 +21,9 @@ store.dispatch({
 })
 
 GetAllProfileSetting(db,store.dispatch)
-GetAllDailyTaskByDate(db,toyyyyMMDD(new Date()),store.dispatch)
+const daily = new Date( Date.parse(new Date())+(7*3600*1000) );
+console.log( 'daily >>>',daily )
+GetAllDailyTaskByDate(db,toyyyyMMDD(daily,true),store.dispatch);
 GetTemplate(db,'daily',store.dispatch)
 store.subscribe(()=>{
   //console.debug('getState >> ',store.getState()['ProfileSetting'])

@@ -1,5 +1,5 @@
 const DateState = {
-    DateSelected : new Date()
+    DateSelected : new Date( Date.parse(new Date())+(7*3600*1000) )
 }
 
 const DateReducers = ( state=DateState, action ) =>

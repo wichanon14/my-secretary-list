@@ -35,7 +35,7 @@ const CalendarModal = (props)=>
     });
 
     useEffect(()=>{
-        console.log(profileSetting)
+        //console.log(profileSetting)
     },[profileSetting])
 
     const renderSpaceArrangement = (ms)=>

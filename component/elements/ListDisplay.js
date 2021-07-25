@@ -27,7 +27,7 @@ const ListDisplay = (props)=>{
             <ScrollView style={{flex:1}}>
                 {
                     tasks.filter(
-                            (val)=>val.date===toyyyyMMDD(dateOpt.DateSelected)
+                            (val)=>val.date===toyyyyMMDD(dateOpt.DateSelected,true)
                         ).map((val,i)=><TaskCard data={val} key={"task_"+i}/>    
                     )
                 }

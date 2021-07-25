@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Modal, StyleSheet, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,7 @@ import Space from './Space'
 import TaskCreatedModal from './TaskCreatedModal'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import TemplateCreateModal from './TemplateCreateModal';
-import { GenerateTemplate } from '../database';
+import { GenerateDailyTemplate, WeeklyTemplateGenerate, MonthlyTemplateGenerate } from '../database';
 
 const MenuBar = ()=>
 {
@@ -14,10 +14,15 @@ const MenuBar = ()=>
     const [ selected, setSelected ] = useState('clipboard-list')
     const [ showTaskCreatedModal, setShowTaskCreatedModal ] = useState(false);
     const dateSelected = useSelector(state=>state.DateOpt);
+    const [ datePick, setDatePick ] = useState(dateSelected.DateSelected)
     const navigation = useNavigation();
     const route = useRoute();
     const db = useSelector(state=>state.database.connection)
     const dispatch = useDispatch();
+
+    useEffect(()=>{
+        setDatePick(dateSelected.DateSelected)
+    },[dateSelected.DateSelected])
 
     const backgroundColor = (name) =>{
 
@@ -56,7 +61,11 @@ const MenuBar = ()=>
             
             <Space size={0.3} />
             <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea} onPress={()=>setShowTaskCreatedModal(true)}
-                onLongPress={()=>GenerateTemplate(db,dateSelected.DateSelected,dispatch)}/>
+                onLongPress={()=>{
+                    GenerateDailyTemplate(db,datePick,dispatch);
+                    WeeklyTemplateGenerate(db,datePick,dispatch);
+                    MonthlyTemplateGenerate(db,datePick,dispatch);
+                }}/>
             
             <Space size={0.5} />
             <Icon name={'calendar-alt'} size={40} color="white" 

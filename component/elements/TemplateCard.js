@@ -31,12 +31,18 @@ const TemplateCard = (props)=>
         {
             let periodBadges = JSON.parse( props.data.period )
             let results = []
+            
             periodBadges.forEach((val,i) => {
-                results.push(
+                results.push((val.week)?
                     <Text key={`badge_${i}_${val.week}_${val.day}`} 
                         style={{marginLeft:'4%',paddingLeft:8,paddingRight:8,margin:'2%',
                         marginRight:0,borderRadius:20,backgroundColor:'#000',color:'white'}}>
                         W{val.week}{toDaysAbbr(val.day)}
+                    </Text>:
+                    <Text key={`badge_date_${i}_${val.date}`} 
+                        style={{marginLeft:'4%',paddingLeft:8,paddingRight:8,margin:'2%',
+                        marginRight:0,borderRadius:20,backgroundColor:'#000',color:'white'}}>
+                        {val.date}
                     </Text>
                 )
             });
