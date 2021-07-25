@@ -79,10 +79,7 @@ const style=StyleSheet.create({
         alignSelf:'center',
         marginTop:'8%',
         borderRadius:10,
-        shadowColor: '#000',
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        elevation: 2,
+        borderWidth:1
     }
 })
 
