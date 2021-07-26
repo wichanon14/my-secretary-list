@@ -7,6 +7,7 @@ const DateReducers = ( state=DateState, action ) =>
     switch(action.type)
     {
         case 'SET_DATE_SELECTED':
+            console.log('SET_DATE_SELECTED >>> ',action.payload)
             return {
                 ...state,
                 DateSelected:action.payload

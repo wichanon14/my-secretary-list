@@ -139,7 +139,7 @@ export const startDatabase = () =>
             [],success('Profile Setting structure'),error
         );
         tx.executeSql(`
-        INSERT OR REPLACE INTO ProfileSetting ( key_value, create_at, update_at) 
+        INSERT OR IGNORE INTO ProfileSetting ( key_value, create_at, update_at) 
         VALUES 
             ( 'StartLedgerPeriod', strftime('%s','now')*1000, strftime('%s','now')*1000),
             ( 'FinishLedgerPeriod', strftime('%s','now')*1000, strftime('%s','now')*1000);
@@ -488,7 +488,7 @@ export const GenerateDailyTemplate = (db,dateSelected,dispatch) =>
 {
     db.transaction((tx)=>{
 
-        let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+        let sql =`INSERT OR IGNORE INTO Tasks(date,task,create_at,update_at) 
                 SELECT '${toyyyyMMDD(dateSelected,true)}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
                 FROM Template 
                 where template_type = 'daily'`;
@@ -516,7 +516,7 @@ export const WeeklyTemplateGenerate = (db,dateSelected,dispatch) =>
                         if( result && result.length > 0 )
                         {
                             result.forEach(dateResult=>{
-                                let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+                                let sql =`INSERT OR IGNORE INTO Tasks(date,task,create_at,update_at) 
                                 SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
                                 FROM Template 
                                 where Template.id = ${val.id}`;
@@ -556,10 +556,11 @@ export const MonthlyTemplateGenerate = (db,dateSelected,dispatch) =>
                     if( result && result.length > 0 )
                     {
                         result.forEach(dateResult=>{
-                            let sql =`INSERT OR REPLACE INTO Tasks(date,task,create_at,update_at) 
+                            let sql =`INSERT OR IGNORE INTO Tasks(date,task,create_at,update_at) 
                             SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
                             FROM Template 
                             where Template.id = ${data[i].id}`;
+                            console.log( sql );
                             sqlList.push(sql);
                         })
                         chainSql(db,sqlList,0,`Generate Template Monthly`);
