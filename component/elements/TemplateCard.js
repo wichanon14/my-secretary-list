@@ -55,9 +55,9 @@ const TemplateCard = (props)=>
 
     return (
         <TouchableOpacity style={style.cardArea} onLongPress={()=>setShowTaskCreatedModal(true)}>
-            <View style={{minHeight:60,flexDirection:'row',alignItems:'center',marginLeft:'5%'}}>
+            <View style={{minHeight:50,flexDirection:'row',alignItems:'center',marginLeft:'5%'}}>
                 <Icon name={'file'} regular size={20} color="rgba(0,0,0,0.6)" />
-                <Text style={{fontSize:18}}>   {props.data.task_name}</Text>
+                <Text style={{fontSize:15}}>   {props.data.task_name}</Text>
             </View>
             {
                 (props.data.period)?(
@@ -75,7 +75,7 @@ const TemplateCard = (props)=>
 const style=StyleSheet.create({
     cardArea : {
         flex:1,
-        width:'85%',
+        width:'80%',
         alignSelf:'center',
         marginTop:'8%',
         borderRadius:10,
