@@ -47,21 +47,23 @@ const TaskCard = (props) =>
     }
 
     return(
-        <TouchableOpacity onPress={()=>completeTask(props.data)} onLongPress={()=>setShowMenu(true)}
-            style={style.CardArea}>
-            <Icon name={iconName} regular size={20} color="black" >
-                <View style={{width:10}}></View>
-                <Text style={style.Message}>{props.data.task_name}</Text>
-            </Icon>
-            <Menu opened={showMenu} onBackdropPress={()=>setShowMenu(false)} renderer={RoundedContextMenu} >
-                <MenuTrigger/>
-                <MenuOptions customStyles={optionsStyles} style={{margin:'8%'}} >
-                    <MenuOption style={{padding:'5%',borderBottomWidth:1}} onSelect={() => [setShowTaskCreatedModal(true),setShowMenu(false)]} text="Edit" />
-                    <MenuOption onSelect={() => deleteTask(props.data)}>
-                        <Text style={{ color: 'red' }}>Delete</Text>
-                    </MenuOption>
-                </MenuOptions>
-            </Menu>
+        <TouchableOpacity activeOpacity={0.5}
+            onPress={()=>completeTask(props.data)} onLongPress={()=>setShowMenu(true)}>
+            <View style={[style.CardArea,{opacity:(props.data.complete)?0.2:1}]}>
+                <Icon name={iconName} regular size={20} color="black" >
+                    <View style={{width:10}}></View>
+                    <Text style={style.Message}>{props.data.task_name}</Text>
+                </Icon>
+                <Menu opened={showMenu} onBackdropPress={()=>setShowMenu(false)} renderer={RoundedContextMenu} >
+                    <MenuTrigger/>
+                    <MenuOptions customStyles={optionsStyles} style={{margin:'8%'}} >
+                        <MenuOption style={{padding:'5%',borderBottomWidth:1}} onSelect={() => [setShowTaskCreatedModal(true),setShowMenu(false)]} text="Edit" />
+                        <MenuOption onSelect={() => deleteTask(props.data)}>
+                            <Text style={{ color: 'red' }}>Delete</Text>
+                        </MenuOption>
+                    </MenuOptions>
+                </Menu>
+            </View>
             {
                 showTaskCreatedModal && <TaskCreatedModal date={new Date(props.data.date)} 
                     setShow={setShowTaskCreatedModal} show={showTaskCreatedModal} data={props.data}/>
@@ -79,11 +81,7 @@ const style = StyleSheet.create({
         marginTop:'5%',
         justifyContent:'center',
         padding:'5%',
-        backgroundColor:'#FFFF',
-        shadowColor: '#000',
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        elevation: 2,
+        backgroundColor:'#FFFF'
     },
     Message:{
         fontSize:15,
