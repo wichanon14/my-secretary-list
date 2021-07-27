@@ -17,7 +17,7 @@ const LedgerTextAndSumResultInput = (props) =>
                 }
             )
         }
-            style={{borderRadius:20,paddingLeft:'5%',minWidth:'60%',maxWidth:'80%',borderWidth:1,marginRight:'2%'}}/>
+            style={{borderRadius:20,paddingLeft:'5%',minWidth:'60%',maxWidth:'60%',borderWidth:1,marginRight:'2%'}}/>
     )
 }
 

@@ -95,10 +95,7 @@ const Recalculate = (parent)=>
         parent.child.forEach((val)=>{
             Recalculate(val);
         })
-        if(parent.type === 3)
-        {
-            sumValueFromChild(parent)
-        }
+        sumValueFromChild(parent)
     }
 }
 

@@ -9,7 +9,7 @@ const LedgerTextAndPaidAmountAndLimit = (props) =>
     const LedgerState = useSelector(state=>state.Ledger)
 
     return (
-        <View style={{borderWidth:1,padding:'3%',minWidth:'50%',maxWidth:'70%',marginRight:'2%',borderRadius:20}}>
+        <View style={{borderWidth:1,padding:'3%',minWidth:'60%',maxWidth:'60%',marginRight:'2%',borderRadius:20}}>
             <TextInput placeholder={'Text For Title'}
                 value={LedgerState.temp.title}
                 onChangeText={(e)=>dispatch(
