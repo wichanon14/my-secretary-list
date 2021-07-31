@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, StyleSheet, Text, ToastAndroid, TouchableOpacity, ScrollView } from 'react-native'
 import HomeHeader from '../elements/HomeHeader';
 import EmptyComponent from '../elements/EmptyComponent';
@@ -7,7 +7,6 @@ import TopicLedger from '../elements/TopicLedger';
 import DummyLedgerList from '../elements/DummyLedgerList';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLedgerComponent, setTmpLedger } from '../action';
-import Icon from 'react-native-vector-icons/FontAwesome5';
 import LedgerRowType1 from '../elements/LedgerRowType1';
 import LedgerRowType2 from '../elements/LedgerRowType2';
 import LedgerRowType3 from '../elements/LedgerRowType3';
@@ -28,6 +27,8 @@ const Ledger = (props) =>
         return null;
     });
     const db = useSelector(state=>state.database.connection);
+    const [ scrollTo, setScrollTo ] = useState(0);
+    const refScroll = useRef(null);
 
 
     // Modal flag
@@ -41,7 +42,17 @@ const Ledger = (props) =>
         Recalculate(component)
     },[ledgerState.component])
 
-    
+    const scrollHandler = () => {
+        
+        if( refScroll )
+        {
+            refScroll.current.scrollTo({
+                y: scrollTo,
+                animated: true,
+            });
+        }
+        
+      };
 
     const Recalculate = (parent)=>
     {
@@ -162,6 +173,8 @@ const Ledger = (props) =>
                     popupCalendar={popupCalendar} setPopupCalendar={setPopupCalendar}
                     typeModal={typeModal} setTypeModal={setTypeModal}
                     parentList={parent} isLock={lockCreateRecord}
+                    setScrollTo={setScrollTo}
+                    scrollTo={scrollHandler}
                     />
             )
         }
@@ -246,7 +259,9 @@ const Ledger = (props) =>
             <HomeHeader />
             {
                 (component && component.title)?(
-                    <ScrollView style={{flex:1,minHeight:'80%',maxHeight:'90%'}}>
+                    <ScrollView style={{flex:1,minHeight:'80%',maxHeight:'90%'}} 
+                        ref={refScroll}
+                    >
                         {initialScreen()}
                         <View style={{minHeight:200,maxHeight:200}}></View>
                     </ScrollView>            

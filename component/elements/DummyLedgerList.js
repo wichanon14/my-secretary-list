@@ -44,21 +44,21 @@ const DummyLedgerList = (props) =>
         switch(type)
         {
             case 1: 
-                return (<LedgerTextOnlyInput />)
+                return (<LedgerTextOnlyInput scrollTo={props.scrollTo} />)
             case 2:
-                return (<LedgerTextAndAmountInput />)
+                return (<LedgerTextAndAmountInput scrollTo={props.scrollTo} />)
             case 3:
-                return (<LedgerTextAndSumResultInput />)
+                return (<LedgerTextAndSumResultInput scrollTo={props.scrollTo} />)
             case 4:
                 return [
-                    <View style={{borderWidth:1,padding:'3%',minWidth:'50%',maxWidth:'70%',marginRight:'2%',borderRadius:20}}>
+                    <View key={'dummy_1'} style={{borderWidth:1,padding:'3%',minWidth:'50%',maxWidth:'70%',marginRight:'2%',borderRadius:20}}>
                         <Text style={{color:'rgba(0,0,0,0.5)'}}>{LedgerState.temp.title}</Text>
                     </View>,
                     <CalendarSelectedModal popupCalendar={props.popupCalendar} setPopupCalendar={props.setPopupCalendar} 
                             setDateSelected={setDateSelected}/>
                 ]
             case 5:
-                return (<LedgerTextAndPaidAmountAndLimit />)
+                return (<LedgerTextAndPaidAmountAndLimit scrollTo={props.scrollTo} />)
             default:
                 return (
                     <View></View>
@@ -131,9 +131,16 @@ const DummyLedgerList = (props) =>
     }
 
     return (
-        <View style={[{marginLeft:'5%',flexDirection:'row',alignItems:'center'},displayStyle()]}>
-            {RenderInputSection(LedgerState.temp.type)}
-            <TouchableOpacity onPress={()=>props.setTypeModal(true)}>
+        <View style={[{marginLeft:'5%',flexDirection:'row',alignItems:'center'},displayStyle()]}
+            onLayout={(event)=>{
+                const layout = event.nativeEvent.layout;
+                props.setScrollTo(layout.y);
+            }}
+            >
+            {RenderInputSection(LedgerState.temp.type)} 
+            <TouchableOpacity onPress={()=>{
+                props.setTypeModal(true)
+            }}>
                 <Icon name={'list'} size={30} solid color="black" ></Icon>
             </TouchableOpacity>
             <View style={{flex:0.2}}></View>

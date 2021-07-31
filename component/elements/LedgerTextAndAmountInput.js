@@ -13,6 +13,8 @@ const LedgerTextAndAmountInput = (props) =>
         <View style={{borderWidth:1,padding:'3%',minWidth:'60%',maxWidth:'60%',marginRight:'2%',borderRadius:20}}>
             <TextInput placeholder={'Text For Title'}
                 value={LedgerState.temp.title}
+                onFocus={props.scrollTo}
+                autoFocus={true}
                 onChangeText={(e)=>dispatch(
                         {
                             type:'SET_TEMP_LEDGER',payload:{...LedgerState.temp,title:e}

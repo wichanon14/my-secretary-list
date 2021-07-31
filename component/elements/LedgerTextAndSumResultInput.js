@@ -11,6 +11,8 @@ const LedgerTextAndSumResultInput = (props) =>
     return (
         <TextInput placeholder={'Text For Sum Title'} 
             value={LedgerState.temp.title}
+            onFocus={props.scrollTo}
+            autoFocus={true}
             onChangeText={(e)=>dispatch(
                 {
                     type:'SET_TEMP_LEDGER',payload:{...LedgerState.temp,title:e}
