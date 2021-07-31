@@ -76,7 +76,7 @@ const Ledger = (props) =>
                 limit:-1,
                 child:[],
                 includeCalculate:0,
-                targetDate:Date.parse(new Date())+(7*3600*1000)
+                targetDate:Date.parse(new Date())
             }
             AddLedgerRow(db,null,data,dispatch)
         }
@@ -97,7 +97,7 @@ const Ledger = (props) =>
                 limit:-1,
                 child:[],
                 includeCalculate:false,
-                targetDate:Date.parse(new Date())+(7*3600*1000),
+                targetDate:Date.parse(new Date()),
                 temp:true
             }
 

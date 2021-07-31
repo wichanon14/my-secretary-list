@@ -161,7 +161,7 @@ export const AddMasterTask = (db,taskName,then) =>
         tx.executeSql(
             `INSERT INTO Task_Master(task_name,create_at,update_at) 
             VALUES(?,?,?);`,
-            [taskName,Date.parse(new Date())+(7*3600*1000),Date.parse(new Date())+(7*3600*1000)],
+            [taskName,Date.parse(new Date()),Date.parse(new Date())],
             then,then
         )
     },error,success)
@@ -191,7 +191,7 @@ export const AddTask = (db,data,dispatch) =>
             db.transaction((tx)=>{
                 
                 let sql =`INSERT INTO Tasks(date,task,create_at,update_at) 
-                SELECT '${data.date}',id,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                SELECT '${data.date}',id,${Date.parse(new Date())},${Date.parse(new Date())} 
                 FROM Task_Master 
                 where task_name = '${data.task_name}' AND NOT EXISTS (
                     SELECT 1 FROM Tasks WHERE task = Task_Master.id AND date = '${data.date}' 
@@ -260,7 +260,7 @@ export const UpdateTask = (db,data,dispatch) =>
                             if(JSON.parse(JSON.stringify(rows))._array.length>0)
                                 task = JSON.parse(JSON.stringify(rows))._array[0].id;
                             
-                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())+(7*3600*1000)} WHERE id = ${data.id}`;
+                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())} WHERE id = ${data.id}`;
                             tx.executeSql(sql,[],success,error);
                             GetAllDailyTaskByDate(db,data.date,dispatch);
 
@@ -277,7 +277,7 @@ export const UpdateTask = (db,data,dispatch) =>
                             if(JSON.parse(JSON.stringify(rows))._array.length>0)
                                 task = JSON.parse(JSON.stringify(rows))._array[0].id;
                             
-                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())+(7*3600*1000)} WHERE id = ${data.id}`;
+                            let sql = `UPDATE Tasks SET task=${task}, complete = ${data.complete}, update_at = ${Date.parse(new Date())} WHERE id = ${data.id}`;
                             tx.executeSql(sql,[],success,error);
                             GetAllDailyTaskByDate(db,data.date,dispatch);
 
@@ -314,7 +314,7 @@ export const AddLedgerRow = (db,parent,data,dispatch) =>
             `INSERT INTO Ledger
             ( parent_id, title, "type", "level", value, "limit", includeCalculate, target_date, create_at, update_at) 
             VALUES( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? );`,
-            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, data.targetDate, Date.parse(new Date())+(7*3600*1000), Date.parse(new Date())+(7*3600*1000) ],
+            [ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, data.targetDate, Date.parse(new Date()), Date.parse(new Date()) ],
                 ()=>{
                     GetAllLedger(db,dispatch);
                 },error
@@ -362,7 +362,7 @@ export const UpdateLedgerRow = (db,parent,data,dispatch) =>
             SET parent_id=?, title=?, "type"=?, "level"=?, value=?, "limit"=?, includeCalculate=?, 
             update_at=? WHERE id=?;
             `,[ parent, data.title, data.type, data.level, data.value, data.limit, data.includeCalculate, 
-                Date.parse(new Date())+(7*3600*1000) ,data.id ],
+                Date.parse(new Date()) ,data.id ],
                 ()=>{
                     GetAllLedger(db,dispatch);
                 },error
@@ -429,7 +429,7 @@ export const AddTemplate = (db,data,dispatch,setShow)=>{
 
             db.transaction((tx)=>{
                 let sql = `INSERT INTO Template(task,template_type,period,create_at,update_at) 
-                SELECT id,'${data.type}','${data.period}',${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)}
+                SELECT id,'${data.type}','${data.period}',${Date.parse(new Date())},${Date.parse(new Date())}
                 FROM Task_Master 
                 where task_name = '${data.task_name}' AND NOT EXISTS (
                     SELECT 1 FROM Template WHERE task = Task_Master.id AND template_type = '${data.type}' 
@@ -459,7 +459,7 @@ export const EditTemplate = (db,data,dispatch,setShow)=>
                     {
                         let id = rows._array[0].id;
                         db.transaction((tx)=>{
-                            let sql = `UPDATE Template SET task=${id}, period = '${data.period}', update_at=${Date.parse(new Date())+(7*3600*1000)} WHERE id = ${data.id}`;
+                            let sql = `UPDATE Template SET task=${id}, period = '${data.period}', update_at=${Date.parse(new Date())} WHERE id = ${data.id}`;
                             tx.executeSql(sql,[],()=>{
                                 GetTemplate(db,data.template_type,dispatch,setShow);
                             })
@@ -489,7 +489,7 @@ export const GenerateDailyTemplate = (db,dateSelected,dispatch) =>
     db.transaction((tx)=>{
 
         let sql =`INSERT OR IGNORE INTO Tasks(date,task,create_at,update_at) 
-                SELECT '${toyyyyMMDD(dateSelected,true)}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                SELECT '${toyyyyMMDD(dateSelected,true)}',task,${Date.parse(new Date())},${Date.parse(new Date())} 
                 FROM Template 
                 where template_type = 'daily'`;
         tx.executeSql(sql,[],()=>{
@@ -517,7 +517,7 @@ export const WeeklyTemplateGenerate = (db,dateSelected,dispatch) =>
                         {
                             result.forEach(dateResult=>{
                                 let sql =`INSERT OR IGNORE INTO Tasks(date,task,create_at,update_at) 
-                                SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                                SELECT '${dateResult}',task,${Date.parse(new Date())},${Date.parse(new Date())} 
                                 FROM Template 
                                 where Template.id = ${val.id}`;
                                 sqlList.push(sql);
@@ -557,7 +557,7 @@ export const MonthlyTemplateGenerate = (db,dateSelected,dispatch) =>
                     {
                         result.forEach(dateResult=>{
                             let sql =`INSERT OR IGNORE INTO Tasks(date,task,create_at,update_at) 
-                            SELECT '${dateResult}',task,${Date.parse(new Date())+(7*3600*1000)},${Date.parse(new Date())+(7*3600*1000)} 
+                            SELECT '${dateResult}',task,${Date.parse(new Date())},${Date.parse(new Date())} 
                             FROM Template 
                             where Template.id = ${data[i].id}`;
                             console.log( sql );
