@@ -67,6 +67,14 @@ function HomeHeader(){
                         {popupCalendar&&<CalendarModal key={'calendar_modal'} popup={popupCalendar} setPopupCalendar={setPopupCalendar} />}
                     </TouchableOpacity>
                 )
+            case 'Challenge':
+                return (
+                    <View style={{minHeight:'5%'}}>
+                        <Text style={[style.monthYearLabel]}>
+                            Challenge
+                        </Text>
+                    </View>
+                )
         }
     }
 

@@ -10,6 +10,7 @@ import Home from './component/screens/Home';
 import Template from './component/screens/Template';
 import { toyyyyMMDD } from './component/central';
 import Ledger from './component/screens/Ledger';
+import Challenge from './component/screens/Challenge';
 const store = createStore(rootReducers);
 const Stack = createStackNavigator();
 
@@ -38,6 +39,7 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator headerMode={'none'} initialRouteName={'Home'}>
             <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="Challenge" component={Challenge} />
             <Stack.Screen name="Template" component={Template} />
             <Stack.Screen name="Ledger" component={Ledger} />
           </Stack.Navigator>

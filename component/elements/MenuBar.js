@@ -56,8 +56,9 @@ const MenuBar = ()=>
                 style={[style.MenuArea,{backgroundColor:backgroundColor('Home')}]} />
             
             <Space size={0.3} />
-            <Icon name={'bullseye'} size={40} color="white" onPress={()=>setSelected('bullseye')}
-                style={[style.MenuArea,{backgroundColor:backgroundColor('bullseye')}]} />
+            <Icon name={'bullseye'} size={40} color="white" 
+                onPress={()=>navigation.navigate('Challenge')}
+                style={[style.MenuArea,{backgroundColor:backgroundColor('Challenge')}]} />
             
             <Space size={0.3} />
             <Icon name={'plus-circle'} size={90} color="white" style={style.PlusArea} onPress={()=>setShowTaskCreatedModal(true)}
