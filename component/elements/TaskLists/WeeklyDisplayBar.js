@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { View,StyleSheet,Text, TouchableOpacity } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { getDayAbbr } from '../label'
-import { setDateSelected } from '../action'
-import { GetAllDailyTaskByDate } from '../database'
-import { toyyyyMMDD } from '../central'
+import { getDayAbbr } from '../../label'
+import { setDateSelected } from '../../action'
+import { GetAllDailyTaskByDate } from '../../database'
+import { toyyyyMMDD } from '../../central'
 
 const WeeklyDisplayBar = ()=>{
 

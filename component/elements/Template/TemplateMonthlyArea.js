@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
-import { toDaysAbbr } from '../central';
-import { AddTemplate, EditTemplate, DeleteTemplate } from '../database'
+import { toDaysAbbr } from '../../central';
+import { AddTemplate, EditTemplate, DeleteTemplate } from '../../database'
 
 const TemplateMonthlyArea = (props)=>
 {

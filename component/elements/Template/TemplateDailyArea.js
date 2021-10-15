@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, TextInput } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { AddTemplate, EditTemplate, DeleteTemplate } from '../database';
+import { AddTemplate, EditTemplate, DeleteTemplate } from '../../database';
 
 const TemplateDailyArea = (props)=>
 {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Image, Text } from 'react-native';
-import Add from '../../assets/plus-sign-button.png';
+import Add from '../../../assets/plus-sign-button.png';
 
 const EmptyComponent = (props)=>
 {

@@ -10,7 +10,7 @@ const Challenge = () =>
     return (
         <View style={style.MainArea}>
             <HomeHeader />
-            <ChallengeListDisplay height={'61%'} />
+            <ChallengeListDisplay height={'62%'} />
             <MenuBar />
         </View>
     )

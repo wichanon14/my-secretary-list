@@ -4,7 +4,7 @@ import { toyyyyMMDD } from '../../central'
 
 const ChallengeHeader = (props) =>{
     return (
-        <View style={{minHeight:'15%',borderWidth:1,width:'95%'}}>
+        <View style={{minHeight:'15%',borderWidth:1,padding:'3%',borderRadius:15,width:'95%'}}>
             <Text style={[style.monthYearLabel]}>
                 Challenge{' '}
                 <Text style={{fontSize:15}}>( {toyyyyMMDD(new Date())} )</Text>

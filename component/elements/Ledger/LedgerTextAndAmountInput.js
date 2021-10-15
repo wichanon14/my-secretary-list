@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, TextInput, ToastAndroid } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { ValidFloatNumber } from '../central'
+import { ValidFloatNumber } from '../../central'
 
 const LedgerTextAndAmountInput = (props) =>
 {

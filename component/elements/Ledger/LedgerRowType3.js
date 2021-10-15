@@ -2,7 +2,7 @@ import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { sumValueFromChild } from '../central';
+import { sumValueFromChild } from '../../central';
 
 const LedgerRowType3 = (props) =>
 {

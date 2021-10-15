@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Space from './Space'
 import TaskCreatedModal from './TaskLists/TaskCreatedModal'
 import { useNavigation, useRoute } from '@react-navigation/native';
-import TemplateCreateModal from './TemplateCreateModal';
+import TemplateCreateModal from './Template/TemplateCreateModal';
 import { GenerateDailyTemplate, WeeklyTemplateGenerate, MonthlyTemplateGenerate } from '../database';
 
 const MenuBar = ()=>

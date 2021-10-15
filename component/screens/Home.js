@@ -1,8 +1,8 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native';
 import HomeHeader from '../elements/HomeHeader'
-import ListDisplay from '../elements/ListDisplay';
-import WeeklyDisplayBar from '../elements/WeeklyDisplayBar';
+import ListDisplay from '../elements/TaskLists/ListDisplay';
+import WeeklyDisplayBar from '../elements/TaskLists/WeeklyDisplayBar';
 import MenuBar from '../elements/MenuBar'
 
 function Home(){

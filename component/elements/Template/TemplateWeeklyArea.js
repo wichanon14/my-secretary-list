@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { View, TextInput, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
-import { AddTemplate, EditTemplate, DeleteTemplate } from '../database'
+import { AddTemplate, EditTemplate, DeleteTemplate } from '../../database'
 
 const TemplateWeeklyArea = (props)=>
 {

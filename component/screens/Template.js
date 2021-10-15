@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import MenuBar from '../elements/MenuBar';
-import Header from '../elements/Header';
-import PeriodDisplay from '../elements/PeriodDisplay';
-import ListTemplateDisplay from '../elements/ListTemplateDisplay';
+import Header from '../elements/TaskLists/Header';
+import PeriodDisplay from '../elements/Template/PeriodDisplay';
+import ListTemplateDisplay from '../elements/Template/ListTemplateDisplay';
 
 const Template = ()=> 
 {
