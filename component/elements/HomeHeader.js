@@ -5,6 +5,7 @@ import { getMonthName, getMonthAbbr } from '../label'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CalendarModal from './CalendarModal';
+import ChallengeHeader from './Challenge/ChallengeHeader';
 
 function HomeHeader(){
 
@@ -69,11 +70,7 @@ function HomeHeader(){
                 )
             case 'Challenge':
                 return (
-                    <View style={{minHeight:'5%'}}>
-                        <Text style={[style.monthYearLabel]}>
-                            Challenge
-                        </Text>
-                    </View>
+                    <ChallengeHeader />
                 )
         }
     }

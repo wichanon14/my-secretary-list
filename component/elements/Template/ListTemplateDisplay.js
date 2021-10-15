@@ -3,7 +3,7 @@ import { ScrollView, View, StyleSheet, Text } from 'react-native'
 import { useSelector } from 'react-redux'
 import TemplateCard from './TemplateCard';
 
-const ListDisplay = (props)=>{
+const ListTemplateDisplay = (props)=>{
 
     const templates = useSelector(state=>state.Template)
     
@@ -43,12 +43,7 @@ const ListDisplay = (props)=>{
         <View style={style.ListArea}>
             <ScrollView style={{flex:1}}>
                 {
-                    /*tasklists.lists.filter(
-                            (val)=>val.date===toyyyyMMDD(dateOpt.DateSelected)
-                        ).map((val,i)=><TaskCard data={val} key={"task_"+i}/>    
-                    )*/
                     renderTemplateLists()
-
                 }
                 <View style={{minHeight:100}}></View>
             </ScrollView>
@@ -61,4 +56,4 @@ const ListDisplay = (props)=>{
 
 
 
-export default ListDisplay;
+export default ListTemplateDisplay;

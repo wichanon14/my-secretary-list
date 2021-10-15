@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { ScrollView, View, StyleSheet } from 'react-native'
 import { useSelector } from 'react-redux'
 import TaskCard from './TaskCard';
-import { toyyyyMMDD } from '../central';
+import { toyyyyMMDD } from '../../central';
 
 const ListDisplay = (props)=>{
 

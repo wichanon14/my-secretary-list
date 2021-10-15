@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useSelector } from 'react-redux';
-import { toDaysAbbr } from '../central'
+import { toDaysAbbr } from '../../central'
 import TemplateCreateModal from './TemplateCreateModal'
 
 const TemplateCard = (props)=>

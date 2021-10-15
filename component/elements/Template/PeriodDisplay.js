@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, TouchableHighlight, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTemplateTab } from '../action'
-import { GetTemplate } from '../database'
+import { setTemplateTab } from '../../action'
+import { GetTemplate } from '../../database'
 
 const PeriodDisplay = () =>
 {

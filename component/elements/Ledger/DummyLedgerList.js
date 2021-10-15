@@ -6,9 +6,9 @@ import LedgerTextOnlyInput from './LedgerTextOnlyInput';
 import LedgerTextAndAmountInput from './LedgerTextAndAmountInput';
 import LedgerTextAndSumResultInput from './LedgerTextAndSumResultInput';
 import LedgerTextAndPaidAmountAndLimit from './LedgerTextAndPaidAmountAndLimit';
-import CalendarSelectedModal from './CalendarSelectedModal';
-import { AddLedgerRow, DeleteLedgerRow, UpdateLedgerRow } from '../database';
-import { toyyyyMMDD } from '../central'
+import CalendarSelectedModal from '../CalendarSelectedModal';
+import { AddLedgerRow, DeleteLedgerRow, UpdateLedgerRow } from '../../database';
+import { toyyyyMMDD } from '../../central'
 
 const DummyLedgerList = (props) =>
 {
@@ -54,7 +54,7 @@ const DummyLedgerList = (props) =>
                     <View key={'dummy_1'} style={{borderWidth:1,padding:'3%',minWidth:'50%',maxWidth:'70%',marginRight:'2%',borderRadius:20}}>
                         <Text style={{color:'rgba(0,0,0,0.5)'}}>{LedgerState.temp.title}</Text>
                     </View>,
-                    <CalendarSelectedModal popupCalendar={props.popupCalendar} setPopupCalendar={props.setPopupCalendar} 
+                    <CalendarSelectedModal key={'dummy_2'}  popupCalendar={props.popupCalendar} setPopupCalendar={props.setPopupCalendar} 
                             setDateSelected={setDateSelected}/>
                 ]
             case 5:

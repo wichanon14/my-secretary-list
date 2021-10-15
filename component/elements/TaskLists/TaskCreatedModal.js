@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux';
-import { toyyyyMMDD } from '../central';
-import { AddTask, UpdateTask } from "../database";
+import { toyyyyMMDD } from '../../central';
+import { AddTask, UpdateTask } from "../../database";
 
 const TaskCreatedModal = (props)=>
 {

@@ -3,7 +3,7 @@ import { Modal, StyleSheet, View } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
 import Space from './Space'
-import TaskCreatedModal from './TaskCreatedModal'
+import TaskCreatedModal from './TaskLists/TaskCreatedModal'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import TemplateCreateModal from './TemplateCreateModal';
 import { GenerateDailyTemplate, WeeklyTemplateGenerate, MonthlyTemplateGenerate } from '../database';
